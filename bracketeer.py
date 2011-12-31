@@ -39,6 +39,9 @@ class BracketeerIndentCommand(sublime_plugin.TextCommand):
                     substitute = tab + lines[0] + "\n"
                 else:
                     substitute = lines[0] + "\n"
+                    # cursor is at start of line?  indent that, too
+                    if len(lines[0]) > 0 and lines[0][0] in [" ", "\t"]:
+                        substitute = tab + substitute
                     for line in lines[1:-1]:
                         substitute += tab + line + "\n"
                     substitute += lines[-1]
