@@ -1,0 +1,25 @@
+[
+    {
+        "caption": "Bracketeer: Indent Text",
+        "command": "bracketeer_indent"
+    },
+    {
+        "caption": "Bracketeer: Select Inside Braces",
+        "command": "bracketeer_select"
+    },
+    {
+        "caption": "Braces: Insert curly brackets",
+        "command": "bracketeer",
+        "args": { "braces": "{}" }
+    },
+    {
+        "caption": "Braces: Insert square brackets",
+        "command": "bracketeer",
+        "args": { "braces": "[]" }
+    },
+    {
+        "caption": "Braces: Insert round brackets, aka parentheses",
+        "command": "bracketeer",
+        "args": { "braces": "()" }
+    }
+]

@@ -1,5 +1,7 @@
 [
     { "keys": ["super+]"], "command": "bracketeer_indent" },
+    { "keys": ["ctrl+shift+["], "command": "bracketeer_select" },
+
     { "keys": ["{"], "command": "bracketeer", "args": { "braces": "{}" }, "context":
         [
             { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
