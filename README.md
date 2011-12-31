@@ -16,7 +16,9 @@ Commands
 --------
 
 `bracketeer`: Surrounds selected text with braces (or quotes - anything, really), and prevents indentation mishaps.
+
 `bracketeer_indent`: Indents sensibly - allows a clever use of enter, indent, and '{' to surround code in '{}'.  See
+
 `bracketeer_select`: Searches for matching brackets and selects what is inside, or expands the selection to include the brackets.
 
 
