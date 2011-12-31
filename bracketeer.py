@@ -2,6 +2,10 @@ from sublime import Region
 import sublime_plugin
 
 
+def do_nuthin(*args, **kwargs):
+    pass
+
+
 class BracketeerCommand(sublime_plugin.TextCommand):
     def run(self, edit, braces='{}'):
         e = self.view.begin_edit('bracketeer')
@@ -114,21 +118,20 @@ class BracketeerSelectCommand(sublime_plugin.TextCommand):
         # matching bracket is determined by counting closing brackets (+1)
         # and opening brackets (-1) and when the count is zero and the
         # matching opening bracket is found
-        # TODO: ignore strings
         bracket_count = 0
         look_for = match_map[c]
         while True:
             c = self.view.substr(begin_point)
-            if bracket_count == 0 and c == look_for:
-                break
-            elif c in opening_brackets:
-                bracket_count += 1
-            elif c in closing_brackets:
-                bracket_count -= 1
+            if self.view.score_selector(begin_point, 'string') == 0:
+                if bracket_count == 0 and c == look_for:
+                    break
+                elif c in opening_brackets:
+                    bracket_count += 1
+                elif c in closing_brackets:
+                    bracket_count -= 1
             begin_point -= 1
             if begin_point < 0:
                 return
-            print c, bracket_count
         # the current point is to the left of the opening bracket,
         # I want it to be to the right.
         begin_point += 1
