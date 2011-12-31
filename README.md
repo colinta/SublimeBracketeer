@@ -22,7 +22,7 @@ Commands
 `bracketeer_select`: Searches for matching brackets and selects what is inside, or expands the selection to include the brackets.
 
 
-### `bracketeer`
+### bracketeer
 
 
 Required args:
@@ -75,7 +75,7 @@ Press `super+]`, then press "{".  The block of code will be indented, leaving th
     4. }|
 
 
-### `bracketeer_indent`
+### bracketeer_indent
 
 
 Default key combination is super+]
@@ -83,7 +83,7 @@ Default key combination is super+]
 If the first line of selected text is empty (and keep in mind this *ignores* whatever text is to the left of the selection, so not necessarily an empty line), that line will not be indented.  See example usage above.
 
 
-### `bracketeer_select`
+### bracketeer_select
 
 
 Default key combination is ctrl+shift+[
