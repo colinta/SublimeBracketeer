@@ -16,7 +16,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 substitute = self.view.substr(region)
                 self.view.sel().subtract(region)
                 self.view.replace(edit, region, braces[0] + substitute + braces[1])
-                b = region.b if region.b > region.a else region.a
+                b = region.end()
                 b += len(braces)
                 self.view.sel().add(Region(b, b))
         self.view.end_edit(e)
@@ -70,12 +70,8 @@ class BracketeerSelectCommand(sublime_plugin.TextCommand):
             ']': '[',
             ')': '(',
             }
-        if region.b > region.a:
-            begin_point = region.a - 1
-            end_point = region.b
-        else:
-            begin_point = region.b - 1
-            end_point = region.a
+        begin_point = region.begin() - 1
+        end_point = region.end()
 
         # end_point gets incremented immediately, which skips the first
         # character, *unless* the selection is empty, in which case the
