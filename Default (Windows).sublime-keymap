@@ -20,7 +20,7 @@
             { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
         ]
     },
-    { "keys": ["<"], "command": "bracketeer", "args": { "braces": "<>" }, "context":
+    { "keys": ["ctrl+,"], "command": "bracketeer", "args": { "braces": "<>" }, "context":
         [
             { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
             { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
