@@ -1,5 +1,6 @@
 from sublime import Region
 import sublime_plugin
+import re
 
 
 CLOSING_BRACKETS = ['}', ']', ')']
@@ -10,15 +11,41 @@ class BracketeerCommand(sublime_plugin.TextCommand):
     def run(self, edit, braces='{}'):
         e = self.view.begin_edit('bracketeer')
         regions = [region for region in self.view.sel()]
+
+        # sort by region.end() DESC
+        def compare(region_a, region_b):
+            return cmp(region_b.end(), region_a.end())
+        regions.sort(compare)
+
         for region in regions:
             if region.empty():
                 self.view.insert(edit, region.a, braces)
             else:
                 substitute = self.view.substr(region)
+                replacement = braces[0] + substitute + braces[1]
                 self.view.sel().subtract(region)
-                self.view.replace(edit, region, braces[0] + substitute + braces[1])
-                b = region.end()
-                b += len(braces)
+
+                # if we're inserting "real" brackets, not quotes:
+                real_brackets = braces[0] in OPENING_BRACKETS and braces[1] in CLOSING_BRACKETS
+                # check to see if entire lines are selected, and if so do some smart indenting
+                bol_is_nl = region.begin() == 0 or self.view.substr(region.begin() - 1) == "\n"
+                eol_is_nl = region.end() == self.view.size() - 1 or self.view.substr(region.end() - 1) == "\n"
+                if real_brackets and bol_is_nl and eol_is_nl:
+                    if self.view.settings().get('translate_tabs_to_spaces'):
+                        tab = ' ' * self.view.settings().get('tab_size')
+                    else:
+                        tab = "\t"
+                    indent = ''
+                    final = ''
+                    m = re.match('^([ \t]*)' + tab, self.view.substr(region))
+                    if m:
+                        indent = m.group(1)
+                        final = "\n"
+                    else:
+                        substitute = tab + substitute
+                    replacement = indent + braces[0] + "\n" + substitute + indent + braces[1] + final
+                self.view.replace(edit, region, replacement)
+                b = region.begin() + len(replacement)
                 self.view.sel().add(Region(b, b))
         self.view.end_edit(e)
 
