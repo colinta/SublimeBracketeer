@@ -1,6 +1,9 @@
 Bracketeer plugin for Sublime Text 2
 =====================================
 
+Some bracket manipulation, selection, and insertion commands.
+
+
 Installation
 ------------
 
@@ -17,7 +20,9 @@ Commands
 
 `bracketeer`: Surrounds selected text with braces (or quotes - anything, really), and prevents indentation mishaps.
 
-`bracketeer_indent`: Indents sensibly - allows a clever use of enter, indent, and '{' to surround code in '{}'.  See
+`bracketeer_indent`: Indents sensibly - allows a clever use of enter, indent, and '{' to surround code in '{}'.  See example below.
+
+`bracketeer_goto`: Goes to the matching bracket - either opener (ctrl+[), closer (ctrl+]), or *both* (ctrl+alt+[).
 
 `bracketeer_select`: Searches for matching brackets and selects what is inside, or expands the selection to include the brackets.
 

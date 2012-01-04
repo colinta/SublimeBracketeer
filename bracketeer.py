@@ -2,14 +2,15 @@ from sublime import Region
 import sublime_plugin
 
 
-def do_nuthin(*args, **kwargs):
-    pass
+CLOSING_BRACKETS = ['}', ']', ')']
+OPENING_BRACKETS = ['{', '[', '(']
 
 
 class BracketeerCommand(sublime_plugin.TextCommand):
     def run(self, edit, braces='{}'):
         e = self.view.begin_edit('bracketeer')
-        for region in self.view.sel():
+        regions = [region for region in self.view.sel()]
+        for region in regions:
             if region.empty():
                 self.view.insert(edit, region.a, braces)
             else:
@@ -30,7 +31,8 @@ class BracketeerIndentCommand(sublime_plugin.TextCommand):
         else:
             tab = "\t"
 
-        for region in self.view.sel():
+        regions = [region for region in self.view.sel()]
+        for region in regions:
             if region.empty():
                 # insert tab at beginning of line
                 point = self.view.text_point(self.view.rowcol(region.a)[0], 0)
@@ -54,22 +56,18 @@ class BracketeerIndentCommand(sublime_plugin.TextCommand):
         self.view.end_edit(e)
 
 
-class BracketeerSelectCommand(sublime_plugin.TextCommand):
-    def run(self, edit):
-        e = self.view.begin_edit('bracketeer')
-        for region in self.view.sel():
-            self.run_each(edit, region)
-        self.view.end_edit(e)
-
-    def run_each(self, edit, region):
-        # find next brace
-        closing_brackets = ['}', ']', ')']
-        opening_brackets = ['{', '[', '(']
+class BracketeerBracketMatcher(sublime_plugin.TextCommand):
+    def find_brackets(self, region, search_brackets=None):
         match_map = {
             '}': '{',
             ']': '[',
             ')': '(',
             }
+        # find next brace in search_brackets
+        if not search_brackets:
+            search_brackets = ['}', ']', ')']
+        elif isinstance(search_brackets, str):
+            search_brackets = [search_brackets]
         begin_point = region.begin() - 1
         end_point = region.end()
 
@@ -80,56 +78,112 @@ class BracketeerSelectCommand(sublime_plugin.TextCommand):
             # if the current character is a bracket, and the character to the left is the
             # *matching* bracket, don't match the empty contents
             c = self.view.substr(end_point)
-            if c in closing_brackets and self.view.substr(end_point - 1) == match_map[c]:
+            if c in search_brackets and self.view.substr(end_point - 1) == match_map[c]:
                 # cursor is between two brackets - select them and return
-                self.view.sel().subtract(region)
-                self.view.sel().add(Region(begin_point, end_point + 1))
-                return
+                return Region(begin_point, end_point + 1)
 
         else:
             # if the selection is inside two brackets, select them and return
             c1 = self.view.substr(begin_point)
             c2 = self.view.substr(end_point)
 
-            if c2 in closing_brackets and c1 == match_map[c2]:
-                self.view.sel().subtract(region)
-                self.view.sel().add(Region(begin_point, end_point + 1))
-                return
+            if c2 in search_brackets and c1 == match_map[c2]:
+                return Region(begin_point, end_point + 1)
 
+        # scan forward searching for a closing bracket.
         bracket_count = 0
         while True:
             c = self.view.substr(end_point)
-            if c in closing_brackets and bracket_count == 0:
-                break
-            elif c in opening_brackets:
-                bracket_count += 1
-            elif c in closing_brackets:
-                bracket_count -= 1
+            if self.view.score_selector(end_point, 'string') == 0:
+                if bracket_count <= 0 and c in search_brackets:
+                    break
+                elif c in OPENING_BRACKETS:
+                    bracket_count += 1
+                elif c in CLOSING_BRACKETS:
+                    bracket_count -= 1
 
             end_point += 1
             if end_point >= self.view.size():
-                return
+                return None
 
         # found a bracket, scan backwards until matching bracket is found.
         # matching bracket is determined by counting closing brackets (+1)
         # and opening brackets (-1) and when the count is zero and the
         # matching opening bracket is found
-        bracket_count = 0
         look_for = match_map[c]
         while True:
             c = self.view.substr(begin_point)
             if self.view.score_selector(begin_point, 'string') == 0:
                 if bracket_count == 0 and c == look_for:
                     break
-                elif c in opening_brackets:
+                elif c in OPENING_BRACKETS:
                     bracket_count += 1
-                elif c in closing_brackets:
+                elif c in CLOSING_BRACKETS:
                     bracket_count -= 1
             begin_point -= 1
             if begin_point < 0:
-                return
+                return None
         # the current point is to the left of the opening bracket,
         # I want it to be to the right.
         begin_point += 1
-        self.view.sel().subtract(region)
-        self.view.sel().add(Region(begin_point, end_point))
+        return Region(begin_point, end_point)
+
+
+class BracketeerGotoCommand(BracketeerBracketMatcher):
+    def run(self, edit, **kwargs):
+        e = self.view.begin_edit('bracketeer')
+        regions = [region for region in self.view.sel()]
+        for region in regions:
+            self.run_each(edit, region, **kwargs)
+        self.view.end_edit(e)
+
+    def run_each(self, edit, region, goto):
+        cursor = region.b
+        if goto == "left" and self.view.substr(cursor - 1) == '{':
+            cursor -= 1
+        elif goto == "both" and self.view.substr(cursor) == '{':
+            cursor += 1
+        elif goto in ["left", "both"] and self.view.substr(cursor - 1) == '}':
+            cursor -= 1
+
+        new_region = self.find_brackets(Region(cursor, cursor), '}')
+
+        if new_region:
+            self.view.sel().subtract(region)
+            a = new_region.begin()
+            b = new_region.end()
+            if self.view.substr(a) in OPENING_BRACKETS:
+                a += 1
+            if self.view.substr(b) in CLOSING_BRACKETS:
+                b += 1
+
+            if goto == "left":
+                new_region = Region(a, a)
+                self.view.sel().add(new_region)
+                self.view.show(new_region)
+            elif goto == "right":
+                new_region = Region(b, b)
+                self.view.sel().add(new_region)
+                self.view.show(new_region)
+            elif goto == "both":
+                self.view.sel().add(Region(a, a))
+                self.view.sel().add(Region(b, b))
+                self.view.show(new_region.b)
+            else:
+                raise ValueError("`goto` should have a value of 'left', 'right', or 'both'), not '" + goto + '"')
+
+
+class BracketeerSelectCommand(BracketeerBracketMatcher):
+    def run(self, edit, **kwargs):
+        e = self.view.begin_edit('bracketeer')
+        regions = [region for region in self.view.sel()]
+        for region in regions:
+            self.run_each(edit, region, **kwargs)
+        self.view.end_edit(e)
+
+    def run_each(self, edit, region):
+        new_region = self.find_brackets(region)
+        if new_region:
+            self.view.sel().subtract(region)
+            self.view.sel().add(new_region)
+            self.view.show(new_region.b)
