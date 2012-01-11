@@ -44,8 +44,10 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                     else:
                         substitute = tab + substitute
                     replacement = indent + braces[0] + "\n" + substitute + indent + braces[1] + final
+                    b = region.begin() + len(replacement) - len("\n" + indent + braces[1] + final)
+                else:
+                    b = region.begin() + len(replacement)
                 self.view.replace(edit, region, replacement)
-                b = region.begin() + len(replacement)
                 self.view.sel().add(Region(b, b))
         self.view.end_edit(e)
 
