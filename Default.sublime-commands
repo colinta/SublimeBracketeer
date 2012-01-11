@@ -8,17 +8,17 @@
         "command": "bracketeer_select"
     },
     {
-        "caption": "Braces: Insert curly brackets",
+        "caption": "Bracketeer: Insert curly brackets",
         "command": "bracketeer",
         "args": { "braces": "{}" }
     },
     {
-        "caption": "Braces: Insert square brackets",
+        "caption": "Bracketeer: Insert square brackets",
         "command": "bracketeer",
         "args": { "braces": "[]" }
     },
     {
-        "caption": "Braces: Insert round brackets, aka parentheses",
+        "caption": "Bracketeer: Insert round brackets, aka parentheses",
         "command": "bracketeer",
         "args": { "braces": "()" }
     }
