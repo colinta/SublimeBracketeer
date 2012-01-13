@@ -1,5 +1,6 @@
-from sublime import Region
+import sublime
 import sublime_plugin
+from sublime import Region
 import re
 
 
@@ -79,12 +80,26 @@ class BracketeerIndentCommand(sublime_plugin.TextCommand):
                 if len(lines) == 1:
                     substitute = tab + lines[0] + "\n"
                 else:
-                    substitute = lines[0] + "\n"
+                    default_settings = sublime.load_settings("bracketeer.sublime-settings")
+                    dont_indent_list = default_settings.get('dont_indent')
+
+                    # lines that start with these strings don't get indented
+                    def dont_indent(line):
+                        return any(dont for dont in dont_indent_list if line[:len(dont)] == dont)
+
                     # cursor is at start of line?  indent that, too
-                    if len(lines[0]) > 0:
-                        substitute = tab + substitute
+                    if len(lines[0]) > 0 and not dont_indent(lines[0]):
+                        substitute = tab
+                    else:
+                        substitute = ''
+                    substitute += lines[0] + "\n"
+
                     for line in lines[1:-1]:
-                        substitute += tab + line + "\n"
+                        if len(line):
+                            if not dont_indent(line):
+                                substitute += tab
+                            substitute += line
+                        substitute += "\n"
                     substitute += lines[-1]
                 self.view.replace(edit, region, substitute)
 
