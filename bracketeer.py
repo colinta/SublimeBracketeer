@@ -116,7 +116,7 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
         # find next brace in search_brackets
         if not search_brackets:
             search_brackets = ['}', ']', ')']
-        elif isinstance(search_brackets, str):
+        elif isinstance(search_brackets, basestring):
             search_brackets = [search_brackets]
         begin_point = region.begin() - 1
         end_point = region.end()
