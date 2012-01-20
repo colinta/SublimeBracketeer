@@ -2,70 +2,8 @@
     { "keys": ["ctrl+]"], "command": "bracketeer_indent" },
     { "keys": ["ctrl+shift+["], "command": "bracketeer_select" },
 
-    { "keys": ["{"], "command": "bracketeer", "args": { "braces": "{}" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    },
-    { "keys": ["["], "command": "bracketeer", "args": { "braces": "[]" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    },
-    { "keys": ["("], "command": "bracketeer", "args": { "braces": "()" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    },
-    { "keys": ["ctrl+,"], "command": "bracketeer", "args": { "braces": "<>" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    },
-    { "keys": ["«"], "command": "bracketeer", "args": { "braces": "«»" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    },
-    { "keys": ["‹"], "command": "bracketeer", "args": { "braces": "‹›" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    },
-    { "keys": ["'"], "command": "bracketeer", "args": { "braces": "''" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    },
-    { "keys": ["\""], "command": "bracketeer", "args": { "braces": "\"\"" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    },
-    { "keys": ["‘"], "command": "bracketeer", "args": { "braces": "‘’" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    },
-    { "keys": ["“"], "command": "bracketeer", "args": { "braces": "“”" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    },
-    { "keys": ["`"], "command": "bracketeer", "args": { "braces": "``" }, "context":
-        [
-            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
-            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }
-        ]
-    }
+    { "keys": ["alt+["], "command": "bracketeer_goto", "args": {"goto": "left"} },
+    { "keys": ["alt+]"], "command": "bracketeer_goto", "args": {"goto": "right"} },
+    { "keys": ["ctrl+alt+["], "command": "bracketeer_goto", "args": {"goto": "both"} },
+    { "keys": ["ctrl+alt+]"], "command": "bracketeer_goto", "args": {"goto": "both"} }
 ]
