@@ -9,7 +9,7 @@ OPENING_BRACKETS = ['{', '[', '(']
 
 
 class BracketeerCommand(sublime_plugin.TextCommand):
-    def run(self, edit, braces='{}'):
+    def run(self, edit, **kwargs):
         e = self.view.begin_edit('bracketeer')
         regions = [region for region in self.view.sel()]
 
@@ -19,38 +19,60 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         regions.sort(compare)
 
         for region in regions:
-            if region.empty():
-                self.view.insert(edit, region.a, braces)
-            else:
-                substitute = self.view.substr(region)
-                replacement = braces[0] + substitute + braces[1]
-                self.view.sel().subtract(region)
-
-                # if we're inserting "real" brackets, not quotes:
-                real_brackets = braces[0] in OPENING_BRACKETS and braces[1] in CLOSING_BRACKETS
-                # check to see if entire lines are selected, and if so do some smart indenting
-                bol_is_nl = region.begin() == 0 or self.view.substr(region.begin() - 1) == "\n"
-                eol_is_nl = region.end() == self.view.size() - 1 or self.view.substr(region.end() - 1) == "\n"
-                if real_brackets and bol_is_nl and eol_is_nl:
-                    if self.view.settings().get('translate_tabs_to_spaces'):
-                        tab = ' ' * self.view.settings().get('tab_size')
-                    else:
-                        tab = "\t"
-                    indent = ''
-                    final = ''
-                    m = re.match('^([ \t]*)' + tab, self.view.substr(region))
-                    if m:
-                        indent = m.group(1)
-                        final = "\n"
-                    else:
-                        substitute = tab + substitute
-                    replacement = indent + braces[0] + "\n" + substitute + indent + braces[1] + final
-                    b = region.begin() + len(replacement) - len("\n" + indent + braces[1] + final)
-                else:
-                    b = region.begin() + len(replacement)
-                self.view.replace(edit, region, replacement)
-                self.view.sel().add(Region(b, b))
+            self.run_each(edit, region, **kwargs)
         self.view.end_edit(e)
+
+    def run_each(self, edit, region, braces='{}', pressed=None):
+        self.view.sel().subtract(region)
+        if self.view.settings().get('translate_tabs_to_spaces'):
+            tab = ' ' * self.view.settings().get('tab_size')
+        else:
+            tab = "\t"
+
+        row, col = self.view.rowcol(region.begin())
+        indent_point = self.view.text_point(row, 0)
+        if indent_point < region.begin():
+            indent = self.view.substr(Region(indent_point, region.begin()))
+            indent = re.match('^[ \t]*', indent).group(0)
+        else:
+            indent = ''
+
+        braces = braces.replace("\n", "\n" + indent)
+        length = len(braces) / 2
+        l_brace = braces[:length]
+        r_brace = braces[length:]
+
+        if region.empty():
+            after = self.view.substr(Region(region.a, region.a + length))
+            if after == r_brace and r_brace[-1] == pressed:
+                pass
+            else:
+                self.view.insert(edit, region.a, braces)
+            self.view.sel().add(Region(region.a + length, region.a + length))
+        else:
+            substitute = self.view.substr(region)
+            replacement = l_brace + substitute + r_brace
+
+            # if we're inserting "real" brackets, not quotes:
+            real_brackets = l_brace in OPENING_BRACKETS and r_brace in CLOSING_BRACKETS
+            # check to see if entire lines are selected, and if so do some smart indenting
+            bol_is_nl = region.begin() == 0 or self.view.substr(region.begin() - 1) == "\n"
+            eol_is_nl = region.end() == self.view.size() - 1 or self.view.substr(region.end() - 1) == "\n"
+            if real_brackets and bol_is_nl and eol_is_nl:
+                indent = ''
+                final = ''
+                m = re.match('^([ \t]*)' + tab, self.view.substr(region))
+                if m:
+                    indent = m.group(1)
+                    final = "\n"
+                else:
+                    substitute = tab + substitute
+                replacement = indent + l_brace + "\n" + substitute + indent + r_brace + final
+                b = region.begin() + len(replacement) - len("\n" + indent + r_brace + final)
+            else:
+                b = region.begin() + len(replacement)
+            self.view.replace(edit, region, replacement)
+            self.view.sel().add(Region(b, b))
 
 
 class BracketeerIndentCommand(sublime_plugin.TextCommand):
