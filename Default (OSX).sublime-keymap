@@ -1,9 +1,0 @@
-[
-    { "keys": ["super+]"], "command": "bracketeer_indent" },
-    { "keys": ["ctrl+shift+["], "command": "bracketeer_select" },
-
-    { "keys": ["ctrl+["], "command": "bracketeer_goto", "args": {"goto": "left"} },
-    { "keys": ["ctrl+]"], "command": "bracketeer_goto", "args": {"goto": "right"} },
-    { "keys": ["ctrl+alt+["], "command": "bracketeer_goto", "args": {"goto": "both"} },
-    { "keys": ["ctrl+alt+]"], "command": "bracketeer_goto", "args": {"goto": "both"} }
-]
