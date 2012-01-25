@@ -4,6 +4,7 @@ from sublime import Region
 import re
 
 
+# for detecting "real" brackets in BracketeerCommand, and bracket matching in BracketeerBracketMatcher
 CLOSING_BRACKETS = ['}', ']', ')']
 OPENING_BRACKETS = ['{', '[', '(']
 
@@ -33,7 +34,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         indent_point = self.view.text_point(row, 0)
         if indent_point < region.begin():
             indent = self.view.substr(Region(indent_point, region.begin()))
-            indent = re.match('^[ \t]*', indent).group(0)
+            indent = re.match('[ \t]*', indent).group(0)
         else:
             indent = ''
 
@@ -44,11 +45,45 @@ class BracketeerCommand(sublime_plugin.TextCommand):
 
         if region.empty():
             after = self.view.substr(Region(region.a, region.a + length))
-            if after == r_brace and r_brace[-1] == pressed:
-                pass
-            else:
-                self.view.insert(edit, region.a, braces)
+
+            insert_braces = braces
+            in_string_scope = self.view.score_selector(region.a, 'string')
+            if pressed and after == r_brace and r_brace[-1] == pressed:
+                # in this case we pressed the closing character, and that's the character that is to the right
+                # so do nothing except advance cursor position
+                insert_braces = False
+            elif pressed and pressed != l_brace:
+                # we pressed the closing bracket or quote.  This *never*
+                # prints both characters.
+                insert_braces = r_brace
+            elif pressed and in_string_scope:
+                # if the cursor:
+                # (a) is preceded by odd numbers of '\'s?
+                begin_of_string = region.a
+                while self.view.score_selector(begin_of_string - 1, 'string'):
+                    begin_of_string -= 1
+                check_a = self.view.substr(Region(begin_of_string, region.a))
+                check_a = len(re.search(r'[\\]*$', check_a).group(0))
+                check_a = check_a % 2
+
+                # (b) is inside double quotes and an apostrophe
+                in_double_string_scope = self.view.score_selector(region.a, 'string.quoted.double')
+                check_b = in_double_string_scope and pressed == "'"
+
+                # (c) is in a comment
+                in_comment_scope = self.view.score_selector(region.a, 'comment')
+
+                # then don't insert both
+                if check_a or check_b or in_comment_scope:
+                    insert_braces = pressed
+
+            if insert_braces:
+                self.view.insert(edit, region.a, insert_braces)
             self.view.sel().add(Region(region.a + length, region.a + length))
+        elif pressed and pressed != l_brace:
+            b = region.begin() + len(r_brace)
+            self.view.replace(edit, region, r_brace)
+            self.view.sel().add(Region(b, b))
         else:
             substitute = self.view.substr(region)
             replacement = l_brace + substitute + r_brace
@@ -61,7 +96,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             if real_brackets and bol_is_nl and eol_is_nl:
                 indent = ''
                 final = ''
-                m = re.match('^([ \t]*)' + tab, self.view.substr(region))
+                m = re.match('([ \t]*)' + tab, self.view.substr(region))
                 if m:
                     indent = m.group(1)
                     final = "\n"
@@ -71,6 +106,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 b = region.begin() + len(replacement) - len("\n" + indent + r_brace + final)
             else:
                 b = region.begin() + len(replacement)
+
             self.view.replace(edit, region, replacement)
             self.view.sel().add(Region(b, b))
 
