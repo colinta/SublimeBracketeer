@@ -23,7 +23,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             self.run_each(edit, region, **kwargs)
         self.view.end_edit(e)
 
-    def run_each(self, edit, region, braces='{}', pressed=None):
+    def run_each(self, edit, region, braces='{}', pressed=None, unindent=False):
         self.view.sel().subtract(region)
         if self.view.settings().get('translate_tabs_to_spaces'):
             tab = ' ' * self.view.settings().get('tab_size')
@@ -38,6 +38,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         else:
             indent = ''
 
+        # for braces that have newlines ("""), insert the current line's indent
         braces = braces.replace("\n", "\n" + indent)
         length = len(braces) / 2
         l_brace = braces[:length]
@@ -76,6 +77,18 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 # then don't insert both
                 if check_a or check_b or in_comment_scope:
                     insert_braces = pressed
+            elif unindent and row > 0 and indent:
+                # get previous line's indent
+                prev_point = self.view.text_point(row - 1, 0)
+                prev_line = self.view.line(prev_point)
+                prev_indent = self.view.substr(prev_line)
+                prev_indent = re.match('[ \t]*', prev_indent).group(0)
+
+                if len(indent) > len(prev_indent) and indent[len(prev_indent):] == tab:
+                    # move region.a back by 'indent' amount
+                    region = Region(region.a - len(tab), region.b - len(tab))
+                    # and remove the tab
+                    self.view.replace(edit, Region(region.a, region.a + len(tab) - 1), '')
 
             if insert_braces:
                 self.view.insert(edit, region.a, insert_braces)
