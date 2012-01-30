@@ -7,6 +7,7 @@ import re
 # for detecting "real" brackets in BracketeerCommand, and bracket matching in BracketeerBracketMatcher
 CLOSING_BRACKETS = ['}', ']', ')']
 OPENING_BRACKETS = ['{', '[', '(']
+QUOTING_BRACKETS = ['\'', "\""]
 
 
 class BracketeerCommand(sublime_plugin.TextCommand):
@@ -49,15 +50,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
 
             insert_braces = braces
             in_string_scope = self.view.score_selector(region.a, 'string')
-            if pressed and after == r_brace and r_brace[-1] == pressed:
-                # in this case we pressed the closing character, and that's the character that is to the right
-                # so do nothing except advance cursor position
-                insert_braces = False
-            elif pressed and pressed != l_brace:
-                # we pressed the closing bracket or quote.  This *never*
-                # prints both characters.
-                insert_braces = r_brace
-            elif pressed and in_string_scope:
+            if pressed and pressed in QUOTING_BRACKETS and in_string_scope:
                 # if the cursor:
                 # (a) is preceded by odd numbers of '\'s?
                 begin_of_string = region.a
@@ -74,21 +67,41 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 # (c) is in a comment
                 in_comment_scope = self.view.score_selector(region.a, 'comment')
 
-                # then don't insert both
+                # then don't insert both, just insert the one.
                 if check_a or check_b or in_comment_scope:
                     insert_braces = pressed
+                elif after == r_brace and r_brace[-1] == pressed:
+                    # in this case we pressed the closing character, and that's the character that is to the right
+                    # so do nothing except advance cursor position
+                    insert_braces = False
+            elif pressed and after == r_brace and r_brace[-1] == pressed:
+                # in this case we pressed the closing character, and that's the character that is to the right
+                # so do nothing except advance cursor position
+                insert_braces = False
             elif unindent and row > 0 and indent:
-                # get previous line's indent
+                # indent has the current line's indent
+                # get previous line's indent:
                 prev_point = self.view.text_point(row - 1, 0)
                 prev_line = self.view.line(prev_point)
                 prev_indent = self.view.substr(prev_line)
                 prev_indent = re.match('[ \t]*', prev_indent).group(0)
 
-                if len(indent) > len(prev_indent) and indent[len(prev_indent):] == tab:
+                if (not pressed or pressed == l_brace) and len(indent) > len(prev_indent) and indent[len(prev_indent):] == tab:
                     # move region.a back by 'indent' amount
                     region = Region(region.a - len(tab), region.b - len(tab))
                     # and remove the tab
                     self.view.replace(edit, Region(region.a, region.a + len(tab) - 1), '')
+                elif pressed and pressed == r_brace:
+                    if len(indent) == len(prev_indent):
+                        # move region.a back by 'indent' amount
+                        region = Region(region.a - len(tab), region.b - len(tab))
+                        # and remove the tab
+                        self.view.replace(edit, Region(region.a, region.a + len(tab) - 1), '')
+                    insert_braces = r_brace
+            elif pressed and pressed != l_brace:
+                # we pressed the closing bracket or quote.  This *never*
+                # prints both characters.
+                insert_braces = r_brace
 
             if insert_braces:
                 self.view.insert(edit, region.a, insert_braces)

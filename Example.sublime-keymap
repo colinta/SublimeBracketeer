@@ -10,10 +10,10 @@
     //|  BRACKETEER
     //|
     { "keys": ["{"], "command": "bracketeer", "args": { "braces": "{}", "unindent": true } },
+    { "keys": ["}"], "command": "bracketeer", "args": { "braces": "{}", "pressed": "}", "unindent": true } },
     { "keys": ["["], "command": "bracketeer", "args": { "braces": "[]" } },
-    { "keys": ["("], "command": "bracketeer", "args": { "braces": "()" } },
-    { "keys": ["}"], "command": "bracketeer", "args": { "braces": "{}", "pressed": "}" } },
     { "keys": ["]"], "command": "bracketeer", "args": { "braces": "[]", "pressed": "]" } },
+    { "keys": ["("], "command": "bracketeer", "args": { "braces": "()" } },
     { "keys": [")"], "command": "bracketeer", "args": { "braces": "()", "pressed": ")" } },
     { "keys": ["ctrl+,"], "command": "bracketeer", "args": { "braces": "<>" } },
 
