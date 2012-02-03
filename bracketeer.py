@@ -78,7 +78,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 # in this case we pressed the closing character, and that's the character that is to the right
                 # so do nothing except advance cursor position
                 insert_braces = False
-            elif unindent and row > 0 and indent:
+            elif unindent and row > 0 and indent and self.view.substr(region.a) in [' ', '\t']:
                 # indent has the current line's indent
                 # get previous line's indent:
                 prev_point = self.view.text_point(row - 1, 0)
