@@ -30,6 +30,11 @@
             { "key": "selector", "operator": "equal", "operand": "source.smarty" }
         ]
     },
+    { "keys": ["#"], "command": "bracketeer", "args": { "braces": "#  #" }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "source.smarty" }
+        ]
+    },
 
     //|  QUOTES
     { "keys": ["\""], "command": "bracketeer", "args": { "braces": "\"\"", "pressed": "\"" } },
