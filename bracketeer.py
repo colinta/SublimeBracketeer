@@ -51,7 +51,8 @@ class BracketeerCommand(sublime_plugin.TextCommand):
 
             insert_braces = braces
             in_string_scope = self.view.score_selector(region.a, 'string')
-            if pressed and pressed in QUOTING_BRACKETS and in_string_scope:
+            in_text_scope = self.view.score_selector(region.a, 'text') or self.view.score_selector(region.a, 'comment')
+            if pressed and pressed in QUOTING_BRACKETS and (in_string_scope or in_text_scope):
                 # if the cursor:
                 # (a) is preceded by odd numbers of '\'s?
                 begin_of_string = region.a
@@ -61,9 +62,9 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 check_a = len(re.search(r'[\\]*$', check_a).group(0))
                 check_a = check_a % 2
 
-                # (b) is inside double quotes and an apostrophe
+                # (b) is an apostrophe and (inside double quotes or in text scope)
                 in_double_string_scope = self.view.score_selector(region.a, 'string.quoted.double')
-                check_b = in_double_string_scope and pressed == "'"
+                check_b = (in_double_string_scope or in_text_scope) and pressed == "'"
 
                 # (c) is in a comment
                 in_comment_scope = self.view.score_selector(region.a, 'comment')
