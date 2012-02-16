@@ -51,8 +51,16 @@ class BracketeerCommand(sublime_plugin.TextCommand):
 
             insert_braces = braces
             in_string_scope = self.view.score_selector(region.a, 'string')
-            in_text_scope = self.view.score_selector(region.a, 'text') or self.view.score_selector(region.a, 'comment')
-            if pressed and pressed in QUOTING_BRACKETS and (in_string_scope or in_text_scope):
+            in_comment_scope = self.view.score_selector(region.a, 'comment')
+            in_text_scope = self.view.score_selector(region.a, 'text')
+            in_source_scope = self.view.score_selector(region.a, 'source')
+            in_text_scope = in_text_scope and (in_text_scope > in_source_scope)
+
+            if pressed and after == r_brace and r_brace[-1] == pressed and (pressed not in QUOTING_BRACKETS or in_string_scope):
+                # in this case we pressed the closing character, and that's the character that is to the right
+                # so do nothing except advance cursor position
+                insert_braces = False
+            elif pressed and pressed in QUOTING_BRACKETS and (in_comment_scope or in_text_scope or in_string_scope):
                 # if the cursor:
                 # (a) is preceded by odd numbers of '\'s?
                 begin_of_string = region.a
@@ -66,20 +74,16 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 in_double_string_scope = self.view.score_selector(region.a, 'string.quoted.double')
                 check_b = (in_double_string_scope or in_text_scope) and pressed == "'"
 
-                # (c) is in a comment
-                in_comment_scope = self.view.score_selector(region.a, 'comment')
+                # (c) is in a scope where an apostrophe is appropriate
+                check_c = in_comment_scope or in_text_scope or in_string_scope
 
                 # then don't insert both, just insert the one.
-                if check_a or check_b or in_comment_scope:
+                if check_a or check_b or check_c:
                     insert_braces = pressed
                 elif after == r_brace and r_brace[-1] == pressed:
                     # in this case we pressed the closing character, and that's the character that is to the right
                     # so do nothing except advance cursor position
                     insert_braces = False
-            elif pressed and after == r_brace and r_brace[-1] == pressed:
-                # in this case we pressed the closing character, and that's the character that is to the right
-                # so do nothing except advance cursor position
-                insert_braces = False
             elif unindent and row > 0 and indent and line == indent:
                 # indent has the current line's indent
                 # get previous line's indent:
