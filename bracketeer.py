@@ -24,7 +24,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             self.run_each(edit, region, **kwargs)
         self.view.end_edit(e)
 
-    def run_each(self, edit, region, braces='{}', pressed=None, unindent=False):
+    def run_each(self, edit, region, braces='{}', pressed=None, unindent=False, snippet=False):
         self.view.sel().subtract(region)
         if self.view.settings().get('translate_tabs_to_spaces'):
             tab = ' ' * self.view.settings().get('tab_size')
@@ -41,7 +41,9 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         line = self.view.substr(self.view.line(region.a))
 
         # for braces that have newlines ("""), insert the current line's indent
-        braces = braces.replace("\n", "\n" + indent)
+        # snippets do not need this treatment
+        if not snippet:
+            braces = braces.replace("\n", "\n" + indent)
         length = len(braces) / 2
         l_brace = braces[:length]
         r_brace = braces[length:]
@@ -110,8 +112,13 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 insert_braces = r_brace
 
             if insert_braces:
-                self.view.insert(edit, region.a, insert_braces)
-            self.view.sel().add(Region(region.a + length, region.a + length))
+                if snippet:
+                    self.view.sel().add(Region(region.a, region.a))
+                    self.view.run_command('insert_snippet', {'contents': insert_braces})
+                else:
+                    self.view.insert(edit, region.a, insert_braces)
+            if not snippet:
+                self.view.sel().add(Region(region.a + length, region.a + length))
         elif pressed and pressed != l_brace:
             b = region.begin() + len(r_brace)
             self.view.replace(edit, region, r_brace)

@@ -17,6 +17,13 @@
     { "keys": [")"], "command": "bracketeer", "args": { "braces": "()", "pressed": ")" } },
     { "keys": ["ctrl+,"], "command": "bracketeer", "args": { "braces": "<>" } },
 
+    //|  reStructured Text
+    { "keys": ["alt+`"], "command": "bracketeer", "args": { "braces": "````", "pressed": "``" }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
+        ]
+    },
+
     //|  DJANGO CURLIES
     // For django, liquid, jinja.  All the grammars *I* have list 'source.smarty' as
     // when the cursor is inside "{}"s
@@ -42,7 +49,7 @@
     { "keys": ["'"], "command": "bracketeer", "args": { "braces": "''", "pressed": "'" } },
     { "keys": ["ctrl+'","'"], "command": "bracketeer", "args": { "braces": "'''\n\n'''" } },
     { "keys": ["`"], "command": "bracketeer", "args": { "braces": "``", "pressed": "`" } },
-    { "keys": ["ctrl+'","`"], "command": "bracketeer", "args": { "braces": "```\n\n```" } },
+    { "keys": ["ctrl+'","`"], "command": "bracketeer", "args": { "braces": "```${1:syntax}\n$0\n```", "snippet": true } },
     { "keys": ["«"], "command": "bracketeer", "args": { "braces": "«»" } },
     { "keys": ["»"], "command": "bracketeer", "args": { "braces": "«»", "pressed": "»" } },
     { "keys": ["‹"], "command": "bracketeer", "args": { "braces": "‹›" } },
