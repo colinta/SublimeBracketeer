@@ -2,10 +2,10 @@
     { "keys": ["super+]"], "command": "bracketeer_indent" },
     { "keys": ["ctrl+shift+["], "command": "bracketeer_select" },
 
-    { "keys": ["ctrl+["], "command": "bracketeer_goto", "args": {"goto": "left"} },
-    { "keys": ["ctrl+]"], "command": "bracketeer_goto", "args": {"goto": "right"} },
-    { "keys": ["ctrl+alt+["], "command": "bracketeer_goto", "args": {"goto": "both"} },
-    { "keys": ["ctrl+alt+]"], "command": "bracketeer_goto", "args": {"goto": "both"} },
+    { "keys": ["ctrl+["], "command": "bracketeer_goto", "args": { "goto": "left" } },
+    { "keys": ["ctrl+]"], "command": "bracketeer_goto", "args": { "goto": "right" } },
+    { "keys": ["ctrl+alt+["], "command": "bracketeer_goto", "args": { "goto": "both" } },
+    { "keys": ["ctrl+alt+]"], "command": "bracketeer_goto", "args": { "goto": "both" } },
     //|
     //|  BRACKETEER
     //|
@@ -58,60 +58,64 @@
     { "keys": ["”"], "command": "bracketeer", "args": { "braces": "“”", "pressed": "”" }  },
     { "keys": ["‘"], "command": "bracketeer", "args": { "braces": "‘’" } },
     { "keys": ["’"], "command": "bracketeer", "args": { "braces": "‘’", "pressed": "’" } },
+
+    //|
+    //|  AUTO DELETE MATCHING '', "", [], etc.
+    //|
     { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
         [
             { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
             { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-            { "key": "preceding_text", "operator": "regex_contains", "operand": "\"$", "match_all": true },
-            { "key": "following_text", "operator": "regex_contains", "operand": "^\"", "match_all": true }
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "\"$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^\"" }
         ]
     },
     { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
         [
             { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
             { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-            { "key": "preceding_text", "operator": "regex_contains", "operand": "'$", "match_all": true },
-            { "key": "following_text", "operator": "regex_contains", "operand": "^'", "match_all": true }
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "'$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^'" }
         ]
     },
     { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
         [
             { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
             { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-            { "key": "preceding_text", "operator": "regex_contains", "operand": "`$", "match_all": true },
-            { "key": "following_text", "operator": "regex_contains", "operand": "^`", "match_all": true }
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "`$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^`" }
         ]
     },
     { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
         [
             { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
             { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-            { "key": "preceding_text", "operator": "regex_contains", "operand": "«$", "match_all": true },
-            { "key": "following_text", "operator": "regex_contains", "operand": "^»", "match_all": true }
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "«$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^»" }
         ]
     },
     { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
         [
             { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
             { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-            { "key": "preceding_text", "operator": "regex_contains", "operand": "‹$", "match_all": true },
-            { "key": "following_text", "operator": "regex_contains", "operand": "^›", "match_all": true }
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "‹$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^›" }
         ]
     },
     { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
         [
             { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
             { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-            { "key": "preceding_text", "operator": "regex_contains", "operand": "“$", "match_all": true },
-            { "key": "following_text", "operator": "regex_contains", "operand": "^”", "match_all": true }
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "“$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^”" }
         ]
     },
     { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
         [
             { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
             { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
-            { "key": "preceding_text", "operator": "regex_contains", "operand": "‘$", "match_all": true },
-            { "key": "following_text", "operator": "regex_contains", "operand": "^’", "match_all": true }
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "‘$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^’" }
         ]
     }
 ]

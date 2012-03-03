@@ -3,7 +3,6 @@ import sublime_plugin
 from sublime import Region
 import re
 
-
 # for detecting "real" brackets in BracketeerCommand, and bracket matching in BracketeerBracketMatcher
 CLOSING_BRACKETS = ['}', ']', ')']
 OPENING_BRACKETS = ['{', '[', '(']
@@ -23,6 +22,43 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         for region in regions:
             self.run_each(edit, region, **kwargs)
         self.view.end_edit(e)
+
+    def complicated_quote_checker(self, insert_braces, region, pressed, after, r_brace):
+        in_string_scope = self.view.score_selector(region.a, 'string')
+        in_double_string_scope = in_string_scope and self.view.score_selector(region.a, 'string.quoted.double')
+        in_single_string_scope = in_string_scope and self.view.score_selector(region.a, 'string.quoted.single')
+        at_eol = region.a == self.view.line(region.a).b
+        in_comment_scope = self.view.score_selector(region.a, 'comment')
+        in_text_scope = self.view.score_selector(region.a, 'text')
+        in_php_scope = self.view.score_selector(region.a, 'source.php')
+        in_text_scope = in_text_scope and not in_php_scope
+        if pressed and pressed in QUOTING_BRACKETS and (in_comment_scope or in_text_scope or in_string_scope):
+            # if the cursor:
+            # (a) is preceded by odd numbers of '\'s?
+            if in_comment_scope:
+                scope_test = 'comment'
+            else:
+                scope_test = 'string'
+            begin_of_string = region.a
+            while begin_of_string and self.view.score_selector(begin_of_string - 1, scope_test):
+                begin_of_string -= 1
+            check_a = self.view.substr(Region(begin_of_string, region.a))
+            check_a = len(re.search(r'[\\]*$', check_a).group(0))
+            check_a = check_a % 2
+
+            # (b) is an apostrophe and (inside double quotes or in text scope)
+            check_b = (in_double_string_scope or in_text_scope or in_comment_scope) and pressed == "'"
+
+            # (c) we are at the end of the line and pressed the closing quote
+            check_c = at_eol and (
+                in_single_string_scope and pressed == "'"
+                or
+                in_double_string_scope and pressed == '"'
+                )
+
+            # then don't insert both, just insert the one.
+            if check_a or check_b or check_c:
+                return pressed
 
     def run_each(self, edit, region, braces='{}', pressed=None, unindent=False, snippet=False):
         self.view.sel().subtract(region)
@@ -51,41 +87,17 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         if region.empty():
             after = self.view.substr(Region(region.a, region.a + length))
 
-            insert_braces = braces
             in_string_scope = self.view.score_selector(region.a, 'string')
-            in_comment_scope = self.view.score_selector(region.a, 'comment')
-            in_text_scope = self.view.score_selector(region.a, 'text')
-            in_source_scope = self.view.score_selector(region.a, 'source')
-            in_text_scope = in_text_scope and (in_text_scope > in_source_scope)
+            insert_braces = braces
+            complicated_check = self.complicated_quote_checker(insert_braces, region, pressed, after, r_brace)
 
-            if pressed and after == r_brace and r_brace[-1] == pressed and (pressed not in QUOTING_BRACKETS or in_string_scope):
+            if complicated_check:
+                insert_braces = complicated_check
+            elif pressed and after == r_brace and r_brace[-1] == pressed and (pressed not in QUOTING_BRACKETS or in_string_scope):
                 # in this case we pressed the closing character, and that's the character that is to the right
                 # so do nothing except advance cursor position
+                # test's
                 insert_braces = False
-            elif pressed and pressed in QUOTING_BRACKETS and (in_comment_scope or in_text_scope or in_string_scope):
-                # if the cursor:
-                # (a) is preceded by odd numbers of '\'s?
-                begin_of_string = region.a
-                while self.view.score_selector(begin_of_string - 1, 'string'):
-                    begin_of_string -= 1
-                check_a = self.view.substr(Region(begin_of_string, region.a))
-                check_a = len(re.search(r'[\\]*$', check_a).group(0))
-                check_a = check_a % 2
-
-                # (b) is an apostrophe and (inside double quotes or in text scope)
-                in_double_string_scope = self.view.score_selector(region.a, 'string.quoted.double')
-                check_b = (in_double_string_scope or in_text_scope) and pressed == "'"
-
-                # (c) is in a scope where an apostrophe is appropriate
-                check_c = in_comment_scope or in_text_scope or in_string_scope
-
-                # then don't insert both, just insert the one.
-                if check_a or check_b or check_c:
-                    insert_braces = pressed
-                elif after == r_brace and r_brace[-1] == pressed:
-                    # in this case we pressed the closing character, and that's the character that is to the right
-                    # so do nothing except advance cursor position
-                    insert_braces = False
             elif unindent and row > 0 and indent and line == indent:
                 # indent has the current line's indent
                 # get previous line's indent:
@@ -108,7 +120,6 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                     insert_braces = r_brace
             elif pressed and pressed != l_brace:
                 # we pressed the closing bracket or quote.  This *never*
-                # prints both characters.
                 insert_braces = r_brace
 
             if insert_braces:
