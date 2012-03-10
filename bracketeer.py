@@ -87,16 +87,14 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         if region.empty():
             after = self.view.substr(Region(region.a, region.a + length))
 
-            in_string_scope = self.view.score_selector(region.a, 'string')
             insert_braces = braces
             complicated_check = self.complicated_quote_checker(insert_braces, region, pressed, after, r_brace)
 
             if complicated_check:
                 insert_braces = complicated_check
-            elif pressed and after == r_brace and r_brace[-1] == pressed and (pressed not in QUOTING_BRACKETS or in_string_scope):
+            elif pressed and after == r_brace and r_brace[-1] == pressed:  # and (pressed not in QUOTING_BRACKETS or in_string_scope):
                 # in this case we pressed the closing character, and that's the character that is to the right
                 # so do nothing except advance cursor position
-                # test's
                 insert_braces = False
             elif unindent and row > 0 and indent and line == indent:
                 # indent has the current line's indent
