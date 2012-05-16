@@ -31,8 +31,9 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         at_eol = region.a == self.view.line(region.a).b
         in_comment_scope = self.view.score_selector(region.a, 'comment')
         in_text_scope = self.view.score_selector(region.a, 'text')
-        in_php_scope = self.view.score_selector(region.a, 'source.php')
-        in_text_scope = in_text_scope and not in_php_scope
+        in_embedded_scope = self.view.score_selector(region.a, 'source.php') + self.view.score_selector(region.a, 'source.js')
+        in_text_scope = in_text_scope and not in_embedded_scope
+
         if pressed and pressed in QUOTING_BRACKETS and (in_comment_scope or in_text_scope or in_string_scope):
             # if the cursor:
             # (a) is preceded by odd numbers of '\'s?
