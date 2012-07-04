@@ -15,11 +15,6 @@
     { "keys": ["]"], "command": "bracketeer", "args": { "braces": "[]", "pressed": "]" } },
     { "keys": ["("], "command": "bracketeer", "args": { "braces": "()" } },
     { "keys": [")"], "command": "bracketeer", "args": { "braces": "()", "pressed": ")" } },
-    { "keys": ["ctrl+,"], "command": "bracketeer", "args": { "braces": "<>" } },
-    { "keys": ["ctrl+8"], "command": "bracketeer", "args": { "braces": "**" } },
-    { "keys": ["ctrl+shift+8"], "command": "bracketeer", "args": { "braces": "****" } },
-    { "keys": ["ctrl+-"], "command": "bracketeer", "args": { "braces": "__" } },
-    { "keys": ["ctrl+shift+-"], "command": "bracketeer", "args": { "braces": "__" } },
 
     //|  reStructured Text
     { "keys": ["alt+`"], "command": "bracketeer", "args": { "braces": "````", "pressed": "``" } },
