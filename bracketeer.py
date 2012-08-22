@@ -219,6 +219,8 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
             search_brackets = ['}', ']', ')']
         elif isinstance(search_brackets, basestring):
             search_brackets = [search_brackets]
+
+        closing_search_brackets = [CLOSING_BRACKETS[bracket] for bracket in search_brackets]
         begin_point = region.begin() - 1
         end_point = region.end()
 
@@ -245,12 +247,12 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
         bracket_count = 0
         while True:
             c = self.view.substr(end_point)
-            if self.view.score_selector(end_point, 'string') == 0:
+            if not self.view.score_selector(end_point, 'string'):
                 if bracket_count <= 0 and c in search_brackets:
                     break
-                elif c in OPENING_BRACKETS:
+                elif c in search_brackets and c in OPENING_BRACKETS:
                     bracket_count += 1
-                elif c in CLOSING_BRACKETS:
+                elif c in closing_search_brackets and c in CLOSING_BRACKETS:
                     bracket_count -= 1
 
             end_point += 1
