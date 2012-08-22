@@ -224,7 +224,7 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
         elif isinstance(search_brackets, basestring):
             search_brackets = [search_brackets]
 
-        closing_search_brackets = [CLOSING_BRACKETS[bracket] for bracket in search_brackets]
+        closing_search_brackets = [match_map[bracket] for bracket in search_brackets]
         begin_point = region.begin() - 1
         end_point = region.end()
 
