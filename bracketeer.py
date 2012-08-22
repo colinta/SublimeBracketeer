@@ -62,7 +62,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             if check_a or check_b or check_c:
                 return pressed
 
-    def run_each(self, edit, region, braces='{}', pressed=None, unindent=False):
+    def run_each(self, edit, region, braces='{}', pressed=None, unindent=False, select=False):
         self.view.sel().subtract(region)
         if self.view.settings().get('translate_tabs_to_spaces'):
             tab = ' ' * self.view.settings().get('tab_size')
@@ -151,7 +151,11 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 b = region.begin() + len(replacement)
 
             self.view.replace(edit, region, replacement)
-            self.view.sel().add(Region(b, b))
+
+            if select:
+                self.view.sel().add(Region(b - len(replacement) + len(l_brace), b - len(r_brace)))
+            else:
+                self.view.sel().add(Region(b, b))
 
 
 class BracketeerIndentCommand(sublime_plugin.TextCommand):
