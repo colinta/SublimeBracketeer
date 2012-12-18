@@ -80,6 +80,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         else:
             indent = ''
         line = self.view.substr(self.view.line(region.a))
+        selection = self.view.substr(region)
 
         # for braces that have newlines ("""), insert the current line's indent
         braces = braces.replace("\n", "\n" + indent)
@@ -126,6 +127,10 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             if insert_braces:
                 self.view.insert(edit, region.a, insert_braces)
             self.view.sel().add(Region(region.a + length, region.a + length))
+        elif selection in QUOTING_BRACKETS and pressed in QUOTING_BRACKETS and selection != pressed:
+            # changing a quote from single <=> double, just insert the quote.
+            self.view.replace(edit, region, pressed)
+            self.view.sel().add(Region(region.end(), region.end()))
         elif pressed and pressed != l_brace:
             b = region.begin() + len(r_brace)
             self.view.replace(edit, region, r_brace)
@@ -133,7 +138,6 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         else:
             substitute = self.view.substr(region)
             replacement = l_brace + substitute + r_brace
-
             # if we're inserting "real" brackets, not quotes:
             real_brackets = l_brace in OPENING_BRACKETS and r_brace in CLOSING_BRACKETS
             # check to see if entire lines are selected, and if so do some smart indenting
