@@ -162,49 +162,106 @@
     //|
     //|  Bracket and select
     //|
+    { "keys": ["ctrl+alt+[", "backspace"], "command": "bracketeer", "args": { "braces": "", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
     { "keys": ["ctrl+[", "{"], "command": "bracketeer", "args": { "braces": "{}", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "{"], "command": "bracketeer", "args": { "braces": "{}", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", " "], "command": "bracketeer", "args": { "braces": "  ", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", " "], "command": "bracketeer", "args": { "braces": "  ", "select": true, "replace": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
     { "keys": ["ctrl+[", "["], "command": "bracketeer", "args": { "braces": "[]", "select": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
+    { "keys": ["ctrl+alt+[", "["], "command": "bracketeer", "args": { "braces": "[]", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
     { "keys": ["ctrl+[", "("], "command": "bracketeer", "args": { "braces": "()", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "("], "command": "bracketeer", "args": { "braces": "()", "select": true, "replace": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
     { "keys": ["ctrl+[", "\""], "command": "bracketeer", "args": { "braces": "\"\"", "select": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
+    { "keys": ["ctrl+alt+[", "\""], "command": "bracketeer", "args": { "braces": "\"\"", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
     { "keys": ["ctrl+[", "ctrl+shift+'"], "command": "bracketeer", "args": { "braces": "\"\"\"\"\"\"", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "ctrl+shift+'"], "command": "bracketeer", "args": { "braces": "\"\"\"\"\"\"", "select": true, "replace": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
     { "keys": ["ctrl+[", "'"], "command": "bracketeer", "args": { "braces": "''", "select": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
+    { "keys": ["ctrl+alt+[", "'"], "command": "bracketeer", "args": { "braces": "''", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
     { "keys": ["ctrl+[", "ctrl+'"], "command": "bracketeer", "args": { "braces": "''''''", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "ctrl+'"], "command": "bracketeer", "args": { "braces": "''''''", "select": true, "replace": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
     { "keys": ["ctrl+[", "`"], "command": "bracketeer", "args": { "braces": "``", "select": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
+    { "keys": ["ctrl+alt+[", "`"], "command": "bracketeer", "args": { "braces": "``", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
     { "keys": ["ctrl+[", "ctrl+`"], "command": "bracketeer", "args": { "braces": "``````", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "ctrl+`"], "command": "bracketeer", "args": { "braces": "``````", "select": true, "replace": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
     { "keys": ["ctrl+[", "«"], "command": "bracketeer", "args": { "braces": "«»", "select": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
+    { "keys": ["ctrl+alt+[", "«"], "command": "bracketeer", "args": { "braces": "«»", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
     { "keys": ["ctrl+[", "‹"], "command": "bracketeer", "args": { "braces": "‹›", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "‹"], "command": "bracketeer", "args": { "braces": "‹›", "select": true, "replace": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
     { "keys": ["ctrl+[", "“"], "command": "bracketeer", "args": { "braces": "“”", "select": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
+    { "keys": ["ctrl+alt+[", "“"], "command": "bracketeer", "args": { "braces": "“”", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
     { "keys": ["ctrl+[", "‘"], "command": "bracketeer", "args": { "braces": "‘’", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "‘"], "command": "bracketeer", "args": { "braces": "‘’", "select": true, "replace": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
     { "keys": ["ctrl+[", "alt+`"], "command": "bracketeer", "args": { "braces": "````", "select": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
+    { "keys": ["ctrl+alt+[", "alt+`"], "command": "bracketeer", "args": { "braces": "````", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
     { "keys": ["ctrl+[", "*"], "command": "bracketeer", "args": { "braces": "**", "select": true }, "context":
+        [
+            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
+        ]
+    },
+    { "keys": ["ctrl+alt+[", "*"], "command": "bracketeer", "args": { "braces": "**", "select": true, "replace": true }, "context":
         [
             { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true },
             { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
