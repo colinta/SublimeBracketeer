@@ -1,11 +1,14 @@
+# coding: utf8
 import sublime
 import sublime_plugin
 from sublime import Region
 import re
 
 # for detecting "real" brackets in BracketeerCommand, and bracket matching in BracketeerBracketMatcher
-CLOSING_BRACKETS = ['}', ']', ')']
 OPENING_BRACKETS = ['{', '[', '(']
+OPENING_BRACKET_LIKE = ['{', '[', '(', '"', "'", u'“', '‘', '«', '‹']
+CLOSING_BRACKETS = ['}', ']', ')']
+CLOSING_BRACKET_LIKE = ['}', ']', ')', '"', "'", u'”', '’', '»', '›']
 QUOTING_BRACKETS = ['\'', "\""]
 
 
