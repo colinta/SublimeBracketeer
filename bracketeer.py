@@ -51,7 +51,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             check_a = len(re.search(r'[\\]*$', check_a).group(0))
             check_a = check_a % 2
 
-            # (b) is an apostrophe and (inside double quotes or in text scope)
+            # (b) is an apostrophe and (inside double quotes or in text or comment scope)
             check_b = (in_double_string_scope or in_text_scope or in_comment_scope) and pressed == "'"
 
             # (c) we are at the end of the line and pressed the closing quote
