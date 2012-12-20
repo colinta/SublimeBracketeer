@@ -236,7 +236,7 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
             }
         # find next brace in closing_search_brackets
         if not closing_search_brackets:
-            closing_search_brackets = ['}', ']', ')']
+            closing_search_brackets = CLOSING_BRACKETS
         elif isinstance(closing_search_brackets, basestring):
             closing_search_brackets = [closing_search_brackets]
 
