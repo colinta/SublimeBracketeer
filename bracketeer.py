@@ -83,10 +83,17 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         selection = self.view.substr(region)
 
         # for braces that have newlines ("""), insert the current line's indent
-        braces = braces.replace("\n", "\n" + indent)
-        length = len(braces) / 2
-        l_brace = braces[:length]
-        r_brace = braces[length:]
+        if isinstance(braces, list):
+            l_brace = braces[0]
+            r_brace = braces[1]
+            braces = ''.join(braces)
+            braces = braces.replace("\n", "\n" + indent)
+            length = len(l_brace)
+        else:
+            braces = braces.replace("\n", "\n" + indent)
+            length = len(braces) / 2
+            l_brace = braces[:length]
+            r_brace = braces[length:]
 
         if region.empty():
             after = self.view.substr(Region(region.a, region.a + length))
