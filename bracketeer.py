@@ -19,8 +19,8 @@ class BracketeerCommand(sublime_plugin.TextCommand):
 
         # sort by region.end() DESC
         def get_end(region):
-            return region.end
-        regions.sort(key=get_end)
+            return region.end()
+        regions.sort(key=get_end, reverse=True)
 
         for region in regions:
             self.run_each(edit, region, **kwargs)
@@ -193,8 +193,8 @@ class BracketeerIndentCommand(sublime_plugin.TextCommand):
 
         # sort by region.end() DESC
         def get_end(region):
-            return region.end
-        regions.sort(key=get_end)
+            return region.end()
+        regions.sort(key=get_end, reverse=True)
 
         for region in regions:
             if region.empty():
@@ -328,8 +328,8 @@ class BracketeerGotoCommand(BracketeerBracketMatcher):
 
         # sort by region.end() DESC
         def get_end(region):
-            return region.end
-        regions.sort(key=get_end)
+            return region.end()
+        regions.sort(key=get_end, reverse=True)
 
         for region in regions:
             self.run_each(edit, region, **kwargs)
@@ -378,8 +378,8 @@ class BracketeerSelectCommand(BracketeerBracketMatcher):
 
         # sort by region.end() DESC
         def get_end(region):
-            return region.end
-        regions.sort(key=get_end)
+            return region.end()
+        regions.sort(key=get_end, reverse=True)
 
         for region in regions:
             self.run_each(edit, region, **kwargs)
