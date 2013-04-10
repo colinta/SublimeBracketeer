@@ -16,14 +16,7 @@ QUOTING_BRACKETS = ['\'', "\""]
 
 class BracketeerCommand(sublime_plugin.TextCommand):
     def run(self, edit, **kwargs):
-        regions = [region for region in self.view.sel()]
-
-        # sort by region.end() DESC
-        def compare(region_a, region_b):
-            return cmp(region_b.end(), region_a.end())
-        regions.sort(key=cmp_to_key(compare))
-
-        for region in regions:
+        for region in self.view.sel():
             self.run_each(edit, region, **kwargs)
 
     def complicated_quote_checker(self, insert_braces, region, pressed, after, r_brace):
@@ -180,14 +173,7 @@ class BracketeerIndentCommand(sublime_plugin.TextCommand):
         else:
             tab = "\t"
 
-        regions = [region for region in self.view.sel()]
-
-        # sort by region.end() DESC
-        def compare(region_a, region_b):
-            return cmp(region_b.end(), region_a.end())
-        regions.sort(key=cmp_to_key(compare))
-
-        for region in regions:
+        for region in self.view.sel():
             if region.empty():
                 # insert tab at beginning of line
                 point = self.view.text_point(self.view.rowcol(region.a)[0], 0)
@@ -233,7 +219,7 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
         # find next brace in closing_search_brackets
         if not closing_search_brackets:
             closing_search_brackets = CLOSING_BRACKETS
-        elif isinstance(closing_search_brackets, basestring):
+        elif isinstance(closing_search_brackets, str):
             closing_search_brackets = [closing_search_brackets]
 
         opening_search_brackets = [match_map[bracket] for bracket in closing_search_brackets]
@@ -301,14 +287,7 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
 
 class BracketeerGotoCommand(BracketeerBracketMatcher):
     def run(self, edit, **kwargs):
-        regions = [region for region in self.view.sel()]
-
-        # sort by region.end() DESC
-        def compare(region_a, region_b):
-            return cmp(region_b.end(), region_a.end())
-        regions.sort(key=cmp_to_key(compare))
-
-        for region in regions:
+        for region in self.view.sel():
             self.run_each(edit, region, **kwargs)
 
     def run_each(self, edit, region, goto):
@@ -349,14 +328,7 @@ class BracketeerGotoCommand(BracketeerBracketMatcher):
 
 class BracketeerSelectCommand(BracketeerBracketMatcher):
     def run(self, edit, **kwargs):
-        regions = [region for region in self.view.sel()]
-
-        # sort by region.end() DESC
-        def compare(region_a, region_b):
-            return cmp(region_b.end(), region_a.end())
-        regions.sort(key=cmp_to_key(compare))
-
-        for region in regions:
+        for region in self.view.sel():
             self.run_each(edit, region, **kwargs)
 
     def run_each(self, edit, region):
