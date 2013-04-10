@@ -1,8 +1,10 @@
 # coding: utf8
+import re
+from functools import cmp_to_key
+
 import sublime
 import sublime_plugin
 from sublime import Region
-import re
 
 # for detecting "real" brackets in BracketeerCommand, and bracket matching in BracketeerBracketMatcher
 OPENING_BRACKETS = ['{', '[', '(']
@@ -14,18 +16,15 @@ QUOTING_BRACKETS = ['\'', "\""]
 
 class BracketeerCommand(sublime_plugin.TextCommand):
     def run(self, edit, **kwargs):
-        e = self.view.begin_edit('bracketeer')
         regions = [region for region in self.view.sel()]
 
         # sort by region.end() DESC
         def compare(region_a, region_b):
             return cmp(region_b.end(), region_a.end())
-        regions.sort(compare)
+        regions.sort(key=cmp_to_key(compare))
 
         for region in regions:
             self.run_each(edit, region, **kwargs)
-
-        self.view.end_edit(e)
 
     def complicated_quote_checker(self, insert_braces, region, pressed, after, r_brace):
         in_string_scope = self.view.score_selector(region.a, 'string')
@@ -84,7 +83,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
 
         # for braces that have newlines ("""), insert the current line's indent
         braces = braces.replace("\n", "\n" + indent)
-        length = len(braces) / 2
+        length = int(len(braces) / 2)
         l_brace = braces[:length]
         r_brace = braces[length:]
 
@@ -176,7 +175,6 @@ class BracketeerCommand(sublime_plugin.TextCommand):
 
 class BracketeerIndentCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        e = self.view.begin_edit('bracketeer')
         if self.view.settings().get('translate_tabs_to_spaces'):
             tab = ' ' * self.view.settings().get('tab_size')
         else:
@@ -187,7 +185,7 @@ class BracketeerIndentCommand(sublime_plugin.TextCommand):
         # sort by region.end() DESC
         def compare(region_a, region_b):
             return cmp(region_b.end(), region_a.end())
-        regions.sort(compare)
+        regions.sort(key=cmp_to_key(compare))
 
         for region in regions:
             if region.empty():
@@ -223,8 +221,6 @@ class BracketeerIndentCommand(sublime_plugin.TextCommand):
                         substitute += "\n"
                     substitute += lines[-1]
                 self.view.replace(edit, region, substitute)
-
-        self.view.end_edit(e)
 
 
 class BracketeerBracketMatcher(sublime_plugin.TextCommand):
@@ -305,17 +301,15 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
 
 class BracketeerGotoCommand(BracketeerBracketMatcher):
     def run(self, edit, **kwargs):
-        e = self.view.begin_edit('bracketeer')
         regions = [region for region in self.view.sel()]
 
         # sort by region.end() DESC
         def compare(region_a, region_b):
             return cmp(region_b.end(), region_a.end())
-        regions.sort(compare)
+        regions.sort(key=cmp_to_key(compare))
 
         for region in regions:
             self.run_each(edit, region, **kwargs)
-        self.view.end_edit(e)
 
     def run_each(self, edit, region, goto):
         cursor = region.b
@@ -355,17 +349,15 @@ class BracketeerGotoCommand(BracketeerBracketMatcher):
 
 class BracketeerSelectCommand(BracketeerBracketMatcher):
     def run(self, edit, **kwargs):
-        e = self.view.begin_edit('bracketeer')
         regions = [region for region in self.view.sel()]
 
         # sort by region.end() DESC
         def compare(region_a, region_b):
             return cmp(region_b.end(), region_a.end())
-        regions.sort(compare)
+        regions.sort(key=cmp_to_key(compare))
 
         for region in regions:
             self.run_each(edit, region, **kwargs)
-        self.view.end_edit(e)
 
     def run_each(self, edit, region):
         new_region = self.find_brackets(region)
