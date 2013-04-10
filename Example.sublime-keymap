@@ -17,11 +17,7 @@
     { "keys": [")"], "command": "bracketeer", "args": { "braces": "()", "pressed": ")" } },
 
     //|  reStructured Text
-    { "keys": ["alt+`"], "command": "bracketeer", "args": { "braces": "````", "pressed": "``" }, "context":
-        [
-            { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
-        ]
-    },
+    { "keys": ["alt+`"], "command": "bracketeer", "args": { "braces": "````", "pressed": "``" }},
     { "keys": ["*"], "command": "bracketeer", "args": { "braces": "**", "pressed": "*" }, "context":
         [
             { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
