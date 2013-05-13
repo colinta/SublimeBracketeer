@@ -83,7 +83,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             length = len(l_brace)
         else:
             braces = braces.replace("\n", "\n" + indent)
-            length = len(braces) / 2
+            length = len(braces) // 2
             l_brace = braces[:length]
             r_brace = braces[length:]
 
