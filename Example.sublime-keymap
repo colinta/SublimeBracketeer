@@ -17,7 +17,11 @@
     { "keys": [")"], "command": "bracketeer", "args": { "braces": "()", "pressed": ")" } },
 
     //|  reStructured Text
-    { "keys": ["alt+`"], "command": "bracketeer", "args": { "braces": "````", "pressed": "``" }},
+    { "keys": ["alt+`"], "command": "bracketeer", "args": { "braces": "````", "pressed": "``" }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
+        ]
+    },
     { "keys": ["*"], "command": "bracketeer", "args": { "braces": "**", "pressed": "*" }, "context":
         [
             { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
@@ -159,6 +163,12 @@
     //|  Bracket and select
     //|
     { "keys": ["ctrl+alt+[", "backspace"], "command": "bracketeer", "args": { "braces": "", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "d"], "command": "bracketeer", "args": { "braces": ["do", "end"], "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "d"], "command": "bracketeer", "args": { "braces": ["do", "end"], "select": true, "replace": true }, "context":
         [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
     },
     { "keys": ["ctrl+[", "{"], "command": "bracketeer", "args": { "braces": "{}", "select": true }, "context":

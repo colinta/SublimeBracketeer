@@ -75,10 +75,17 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         selection = self.view.substr(region)
 
         # for braces that have newlines ("""), insert the current line's indent
-        braces = braces.replace("\n", "\n" + indent)
-        length = int(len(braces) / 2)
-        l_brace = braces[:length]
-        r_brace = braces[length:]
+        if isinstance(braces, list):
+            l_brace = braces[0]
+            r_brace = braces[1]
+            braces = ''.join(braces)
+            braces = braces.replace("\n", "\n" + indent)
+            length = len(l_brace)
+        else:
+            braces = braces.replace("\n", "\n" + indent)
+            length = len(braces) / 2
+            l_brace = braces[:length]
+            r_brace = braces[length:]
 
         if region.empty():
             after = self.view.substr(Region(region.a, region.a + length))
@@ -226,6 +233,10 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
         begin_point = region.begin() - 1
         end_point = region.end()
 
+        # LaTEX: if selection directly preceeds \right, examine the string that includes \right instead of the actual selection
+        if self.view.substr( Region(end_point, min(end_point+6,self.view.size())) ) == '\\right': end_point += 6
+        # /LaTEX
+
         # end_point gets incremented immediately, which skips the first
         # character, *unless* the selection is empty, in which case the
         # inner contents should be selected before scanning past
@@ -243,6 +254,9 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
             c2 = self.view.substr(end_point)
 
             if c2 in closing_search_brackets and c1 == match_map[c2]:
+                # LaTEX: if \left preceeds selection, select it as well
+                if self.view.substr(Region(max(begin_point-5,0), begin_point))=='\left': begin_point -= 5
+                # /LaTEX
                 return Region(begin_point, end_point + 1)
 
         # scan forward searching for a closing bracket.
@@ -282,6 +296,10 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
         # the current point is to the left of the opening bracket,
         # I want it to be to the right.
         begin_point += 1
+
+        # LaTEX: if selection ends in \right, don't select it
+        if self.view.substr( Region(max(end_point-6,0), end_point) ) == '\\right': end_point -= 6
+        # /LaTEX
         return Region(begin_point, end_point)
 
 
