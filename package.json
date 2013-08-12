@@ -1,7 +1,17 @@
 {
-  "repo": "SublimeBracketeer",
   "name": "Bracketeer",
   "description": "Some bracket manipulation, selection, and insertion commands.",
-  "author": "Colin Thomas-Arnold (colinta)",
-  "homepage": "https://github.com/colinta/SublimeBracketeer"
+  "author": "Colin T.A. Gray (colinta)",
+  "details": "https://github.com/colinta/SublimeBracketeer",
+  "labels": ["formatting", "text manipulation"],
+  "releases": [
+    {
+      "details": "https://github.com/colinta/SublimeBracketeer/tree/master",
+      "sublime_text": "<3000"
+    },
+    {
+      "details": "https://github.com/colinta/SublimeBracketeer/tags",
+      "sublime_text": ">=3000"
+    }
+  ]
 }

@@ -1,8 +1,10 @@
 # coding: utf8
+import re
+from functools import cmp_to_key
+
 import sublime
 import sublime_plugin
 from sublime import Region
-import re
 
 # for detecting "real" brackets in BracketeerCommand, and bracket matching in BracketeerBracketMatcher
 OPENING_BRACKETS = ['{', '[', '(']
@@ -14,18 +16,8 @@ QUOTING_BRACKETS = ['\'', "\""]
 
 class BracketeerCommand(sublime_plugin.TextCommand):
     def run(self, edit, **kwargs):
-        e = self.view.begin_edit('bracketeer')
-        regions = [region for region in self.view.sel()]
-
-        # sort by region.end() DESC
-        def get_end(region):
-            return region.end()
-        regions.sort(key=get_end, reverse=True)
-
-        for region in regions:
+        for region in self.view.sel():
             self.run_each(edit, region, **kwargs)
-
-        self.view.end_edit(e)
 
     def complicated_quote_checker(self, insert_braces, region, pressed, after, r_brace):
         in_string_scope = self.view.score_selector(region.a, 'string')
@@ -91,7 +83,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             length = len(l_brace)
         else:
             braces = braces.replace("\n", "\n" + indent)
-            length = len(braces) / 2
+            length = len(braces) // 2
             l_brace = braces[:length]
             r_brace = braces[length:]
 
@@ -183,20 +175,12 @@ class BracketeerCommand(sublime_plugin.TextCommand):
 
 class BracketeerIndentCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        e = self.view.begin_edit('bracketeer')
         if self.view.settings().get('translate_tabs_to_spaces'):
             tab = ' ' * self.view.settings().get('tab_size')
         else:
             tab = "\t"
 
-        regions = [region for region in self.view.sel()]
-
-        # sort by region.end() DESC
-        def get_end(region):
-            return region.end()
-        regions.sort(key=get_end, reverse=True)
-
-        for region in regions:
+        for region in self.view.sel():
             if region.empty():
                 # insert tab at beginning of line
                 point = self.view.text_point(self.view.rowcol(region.a)[0], 0)
@@ -231,8 +215,6 @@ class BracketeerIndentCommand(sublime_plugin.TextCommand):
                     substitute += lines[-1]
                 self.view.replace(edit, region, substitute)
 
-        self.view.end_edit(e)
-
 
 class BracketeerBracketMatcher(sublime_plugin.TextCommand):
     def find_brackets(self, region, closing_search_brackets=None):
@@ -244,7 +226,7 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
         # find next brace in closing_search_brackets
         if not closing_search_brackets:
             closing_search_brackets = CLOSING_BRACKETS
-        elif isinstance(closing_search_brackets, basestring):
+        elif isinstance(closing_search_brackets, str):
             closing_search_brackets = [closing_search_brackets]
 
         opening_search_brackets = [match_map[bracket] for bracket in closing_search_brackets]
@@ -323,17 +305,8 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
 
 class BracketeerGotoCommand(BracketeerBracketMatcher):
     def run(self, edit, **kwargs):
-        e = self.view.begin_edit('bracketeer')
-        regions = [region for region in self.view.sel()]
-
-        # sort by region.end() DESC
-        def get_end(region):
-            return region.end()
-        regions.sort(key=get_end, reverse=True)
-
-        for region in regions:
+        for region in self.view.sel():
             self.run_each(edit, region, **kwargs)
-        self.view.end_edit(e)
 
     def run_each(self, edit, region, goto):
         cursor = region.b
@@ -373,17 +346,8 @@ class BracketeerGotoCommand(BracketeerBracketMatcher):
 
 class BracketeerSelectCommand(BracketeerBracketMatcher):
     def run(self, edit, **kwargs):
-        e = self.view.begin_edit('bracketeer')
-        regions = [region for region in self.view.sel()]
-
-        # sort by region.end() DESC
-        def get_end(region):
-            return region.end()
-        regions.sort(key=get_end, reverse=True)
-
-        for region in regions:
+        for region in self.view.sel():
             self.run_each(edit, region, **kwargs)
-        self.view.end_edit(e)
 
     def run_each(self, edit, region):
         new_region = self.find_brackets(region)
