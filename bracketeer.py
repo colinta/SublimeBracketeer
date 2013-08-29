@@ -139,13 +139,29 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             replacement = l_brace + substitute + r_brace
             # if we're inserting "real" brackets, not quotes:
             real_brackets = l_brace in OPENING_BRACKETS and r_brace in CLOSING_BRACKETS
+
             # check to see if entire lines are selected, and if so do some smart indenting
-            bol_is_nl = region.begin() == 0 or self.view.substr(region.begin() - 1) == "\n"
+            # bol_is_nl => allman style {}
+            # bol_at_nl => kernigan&ritchie
+            if region.begin() == 0:
+                bol_is_nl = True
+                bol_at_nl = False
+            elif len(self.view) == region.begin() + 1:
+                bol_is_nl = False
+                bol_at_nl = False
+            else:
+                bol_is_nl = self.view.substr(region.begin() - 1) == "\n"
+                bol_at_nl = l_brace == '{' and self.view.substr(region.begin()) == "\n" and self.view.substr(region.begin() - 1) != "\n"
             eol_is_nl = region.end() == self.view.size() - 1 or self.view.substr(region.end() - 1) == "\n"
-            if real_brackets and bol_is_nl and eol_is_nl:
+
+            if real_brackets and (bol_is_nl or bol_at_nl) and eol_is_nl:
                 indent = ''
                 final = ''
-                m = re.match('([ \t]*)' + tab, self.view.substr(region))
+                substr = self.view.substr(region)
+                if bol_at_nl and len(substr) > 1:
+                    substr = substr[1:]
+                    substitute = substitute[1:]
+                m = re.match('([ \t]*)' + tab, substr)
                 if m:
                     indent = m.group(1)
                     final = "\n"
@@ -153,6 +169,10 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                     substitute = tab + substitute
                 replacement = indent + l_brace + "\n" + substitute + indent + r_brace + final
                 b = region.begin() + len(replacement) - len("\n" + indent + r_brace + final)
+
+                if bol_at_nl and not self.view.substr(region.begin() - 1) == ' ':
+                    replacement = ' ' + replacement
+                    b += 1
             else:
                 b = region.begin() + len(replacement)
 
