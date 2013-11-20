@@ -11,10 +11,9 @@ Installation
 Or:
 
 1. Open the Sublime Text Packages folder
-
     - OS X: ~/Library/Application Support/Sublime Text 3/Packages/
     - Windows: %APPDATA%/Sublime Text 3/Packages/
-    - Linux: ~/.Sublime Text 3/Packages/
+    - Linux: ~/.Sublime Text 3/Packages/ or ~/.config/sublime-text-3/Packages
 
 2. clone this repo
 3. Install keymaps for the commands (see Example.sublime-keymap for my preferred keys)
@@ -67,29 +66,18 @@ Options:
 * `‘’`
 * `\`\``
 
-`select`: *Default: false* Whether to select the text after brackets are
-inserted.  Sublime Text usually *does* keep the text selected, so this command
-emulates that behavior.  The example keymap file has these mapped to `["ctrl+[", bracket]`
+`select`: *Default: false* Whether to select the text after brackets are inserted.  Sublime Text usually *does* keep the text selected, so this command emulates that behavior.  The example keymap file has these mapped to `["ctrl+[", bracket]`
 
-`replace`: If the selection is contained inside bracket characters, they will be
-replaced with new brackets.  For example, to change curly brackets to square
-brackets:
+`replace`: If the selection is contained inside bracket characters, they will be replaced with new brackets.  For example, to change curly brackets to square brackets:
 
 1. Use `bracketeer_select` to select inside the curly brackets
 2. Press `"ctrl+alt+[", "["` (from Example.sublime-keymap) and '(text)' changes to '[text]'
 
-The default Sublime Text command re-indents text after pressing a bracket key,
-and it looks really silly to me.  This plugin indents sensibly.  Helpful in
-languages that use curlies, e.g. `C`, `Java`, `PHP`.
+The default Sublime Text command re-indents text after pressing a bracket key, and it looks really silly to me.  This plugin indents sensibly.  Helpful in languages that use curlies, e.g. `C`, `Java`, `PHP`.
 
-In addition, the "super+]" indent command is modified (using
-`bracketeer_indent`) so that the first and last lines are not indented.  Makes
-it easy to add curly braces.  Select some lines of code, with a blank line above
-and below.  Or, if you like your braces on the same line as the `if|while|do`,
-put the start of the selection at the end of that line.
+In addition, the "super+]" indent command is modified (using `bracketeer_indent`) so that the first and last lines are not indented.  Makes it easy to add curly braces.  Select some lines of code, with a blank line above and below.  Or, if you like your braces on the same line as the `if|while|do`, put the start of the selection at the end of that line.
 
-Press `super+]`, then press "{".  The block of code will be indented, leaving
-the code highlighted, then you can surround it in braces.
+Press `super+]`, then press "{".  The block of code will be indented, leaving the code highlighted, then you can surround it in braces.
 
     1. if ( a )
     2. echo NULL;

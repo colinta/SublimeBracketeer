@@ -1,7 +1,6 @@
 {
   "name": "Bracketeer",
   "description": "Some bracket manipulation, selection, and insertion commands.",
-  "author": "Colin T.A. Gray (colinta)",
   "details": "https://github.com/colinta/SublimeBracketeer",
   "labels": ["formatting", "text manipulation"],
   "releases": [
