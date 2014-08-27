@@ -161,18 +161,15 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 bol_is_nl = self.view.substr(region.begin() - 1) == "\n"
                 bol_at_nl = l_brace == '{' and self.view.substr(region.begin()) == "\n" and self.view.substr(region.begin() - 1) != "\n"
             eol_is_nl = region.end() == self.view.size() or self.view.substr(region.end()) == "\n"
+            eol_at_nl = self.view.substr(region.end() - 1) == "\n"
             if eol_is_nl:
                 eol_is_nl = self.view.line(region.begin()) != self.view.line(region.end())
-            elif self.view.substr(region.end() - 1) == "\n":
-                eol_is_nl = True
 
-            if real_brackets and (bol_is_nl or bol_at_nl) and eol_is_nl:
+            if real_brackets and (bol_is_nl or bol_at_nl) and (eol_is_nl or eol_at_nl):
                 indent = ''
-                substr = self.view.substr(region)
-                if bol_at_nl and len(substr) > 1:
-                    substr = substr[1:]
+                if bol_at_nl and substitute:
                     substitute = substitute[1:]
-                m = re.match('([ \t]*)' + tab, substr)
+                m = re.match('([ \t]*)' + tab, substitute)
                 if m:
                     indent = m.group(1)
                 else:
@@ -180,11 +177,19 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 b = region.begin() - len("\n" + indent + r_brace)
 
                 if bol_at_nl:
-                    replacement = l_brace + "\n" + substitute + r_brace
+                    replacement = l_brace + "\n" + substitute
+                    if eol_at_nl:
+                        replacement += indent + r_brace + "\n"
+                        b -= 1
+                    else:
+                        replacement += r_brace + "\n"
+                        b += len(indent)
+
                     if not self.view.substr(region.begin() - 1) == ' ':
                         replacement = ' ' + replacement
                 else:
-                    replacement = indent + l_brace + "\n" + substitute + indent + r_brace
+                    replacement = indent + l_brace + "\n" + substitute + indent + r_brace + "\n"
+                    b -= 1
                 b += len(replacement)
             else:
                 b = region.begin() + len(replacement)
