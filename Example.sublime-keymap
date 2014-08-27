@@ -81,6 +81,7 @@
     { "keys": ["ctrl+'","'"], "command": "bracketeer", "args": { "braces": "'''\n\n'''" } },
     { "keys": ["`"], "command": "bracketeer", "args": { "braces": "``", "pressed": "`" } },
     { "keys": ["ctrl+'","`"], "command": "insert_snippet", "args": { "contents": "```${1:syntax}\n$0\n```" } },
+    { "keys": ["|"], "command": "bracketeer", "args": { "braces": "||", "pressed": "|" } },
     { "keys": ["«"], "command": "bracketeer", "args": { "braces": "«»" } },
     { "keys": ["»"], "command": "bracketeer", "args": { "braces": "«»", "pressed": "»" } },
     { "keys": ["‹"], "command": "bracketeer", "args": { "braces": "‹›" } },
