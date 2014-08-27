@@ -65,7 +65,14 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 return pressed
 
     def run_each(self, edit, region, braces='{}', pressed=None, unindent=False, select=False, replace=False):
-        self.view.sel().subtract(region)
+        '''
+        Options:
+            braces    a list of matching braces or a string containing the pair
+            pressed   the key pressed; used for closing vs opening logic
+            unindent  removes one "tab" from a newline.  true for braces that handle indent, like {}
+            select    whether to select the region inside the braces
+            replace   whether to insert new braces where the old braces were
+        '''
         if self.view.settings().get('translate_tabs_to_spaces'):
             tab = ' ' * self.view.settings().get('tab_size')
         else:
