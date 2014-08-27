@@ -16,15 +16,9 @@ QUOTING_BRACKETS = ['\'', "\""]
 
 class BracketeerCommand(sublime_plugin.TextCommand):
     def run(self, edit, **kwargs):
-        sel_new_regions = []
-        new_region = None
         for region in list(self.view.sel())[::-1]:
             self.view.sel().subtract(region)
-            new_region = self.run_each(edit, region, **kwargs)
-            if new_region is not None:
-                sel_new_regions.append(new_region)
-        for new_region in sel_new_regions:
-            self.view.sel().add(new_region)
+            self.run_each(edit, region, **kwargs)
 
     def complicated_quote_checker(self, insert_braces, region, pressed, after, r_brace):
         in_string_scope = self.view.score_selector(region.a, 'string')
