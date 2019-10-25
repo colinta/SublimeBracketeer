@@ -6,10 +6,6 @@
   "labels": ["formatting", "text manipulation"],
   "releases": [
     {
-      "details": "https://github.com/colinta/SublimeBracketeer/tree/st2",
-      "sublime_text": "<3000"
-    },
-    {
       "details": "https://github.com/colinta/SublimeBracketeer/tags",
       "sublime_text": ">=3000"
     }
