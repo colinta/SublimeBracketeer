@@ -124,7 +124,7 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                     # move region.a back by 'indent' amount
                     region = Region(region.a - len(tab), region.b - len(tab))
                     # and remove the tab
-                    self.view.replace(edit, Region(region.a, region.a + len(tab) - 1), '')
+                    self.view.replace(edit, Region(region.a, region.a + len(tab)), '')
                     insert_braces = r_brace
             elif pressed and pressed != l_brace:
                 # we pressed the closing bracket or quote.  This *never*
