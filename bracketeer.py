@@ -75,10 +75,11 @@ class BracketeerCommand(sublime_plugin.TextCommand):
         row, col = self.view.rowcol(region.begin())
         indent_point = self.view.text_point(row, 0)
         if indent_point < region.begin():
-            indent = self.view.substr(Region(indent_point, region.begin()))
-            indent = re.match('[ \t]*', indent).group(0)
+            indent_string = self.view.substr(Region(indent_point, region.begin()))
+            indent_string = re.match('[ \t]*', indent_string).group(0)
         else:
-            indent = ''
+            indent_string = ''
+
         line = self.view.substr(self.view.line(region.a))
         selection = self.view.substr(region)
 
@@ -87,10 +88,21 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             l_brace = braces[0]
             r_brace = braces[1]
             braces = ''.join(braces)
-            braces = braces.replace("\n", "\n" + indent)
+            braces = braces.replace("\n", "\n" + indent_string)
             length = len(l_brace)
+        elif braces == "\n\n":
+            # special handling for inserting newlines – put extra indent inside the
+            # brackets, but not the last bracket.
+            # {foo} (with foo selected)
+            # ->
+            # {
+            #   foo
+            # }
+            length = 1
+            l_brace = "\n" + indent_string + tab
+            r_brace = braces[length:] + indent_string
         else:
-            braces = braces.replace("\n", "\n" + indent)
+            braces = braces.replace("\n", "\n" + indent_string)
             length = len(braces) // 2
             l_brace = braces[:length]
             r_brace = braces[length:]
@@ -103,25 +115,25 @@ class BracketeerCommand(sublime_plugin.TextCommand):
 
             if complicated_check:
                 insert_braces = complicated_check
-            elif pressed and after == r_brace and r_brace[-1] == pressed:  # and (pressed not in QUOTING_BRACKETS or in_string_scope):
+            elif pressed and after == r_brace and r_brace[-1] == pressed:
                 # in this case we pressed the closing character, and that's the character that is to the right
                 # so do nothing except advance cursor position
                 insert_braces = False
-            elif unindent and row > 0 and indent and line == indent:
-                # indent has the current line's indent
+            elif unindent and row > 0 and indent_string and line == indent_string:
+                # indent_string has the current line's indent
                 # get previous line's indent:
                 prev_point = self.view.text_point(row - 1, 0)
                 prev_line = self.view.line(prev_point)
                 prev_indent = self.view.substr(prev_line)
                 prev_indent = re.match('[ \t]*', prev_indent).group(0)
 
-                if (not pressed or pressed == l_brace) and len(indent) > len(prev_indent) and indent[len(prev_indent):] == tab:
-                    # move region.a back by 'indent' amount
+                if (not pressed or pressed == l_brace) and len(indent_string) > len(prev_indent) and indent_string[len(prev_indent):] == tab:
+                    # move region.a back by 'indent_string' amount
                     region = Region(region.a - len(tab), region.b - len(tab))
                     # and remove the tab
                     self.view.replace(edit, Region(region.a, region.a + len(tab) - 1), '')
                 elif pressed and pressed == r_brace:
-                    # move region.a back by 'indent' amount
+                    # move region.a back by 'indent_string' amount
                     region = Region(region.a - len(tab), region.b - len(tab))
                     # and remove the tab
                     self.view.replace(edit, Region(region.a, region.a + len(tab)), '')
@@ -143,6 +155,8 @@ class BracketeerCommand(sublime_plugin.TextCommand):
             self.view.sel().add(Region(b, b))
         else:
             substitute = self.view.substr(region)
+            if braces == "\n\n":
+                substitute = substitute.replace("\n", "\n" + tab)
             replacement = l_brace + substitute + r_brace
             # if we're inserting "real" brackets, not quotes:
             real_brackets = l_brace in OPENING_BRACKETS and r_brace in CLOSING_BRACKETS
@@ -165,29 +179,29 @@ class BracketeerCommand(sublime_plugin.TextCommand):
                 eol_is_nl = self.view.line(region.begin()) != self.view.line(region.end())
 
             if real_brackets and (bol_is_nl or bol_at_nl) and (eol_is_nl or eol_at_nl):
-                indent = ''
+                indent_string = ''
                 if bol_at_nl and substitute:
                     substitute = substitute[1:]
                 m = re.match('([ \t]*)' + tab, substitute)
                 if m:
-                    indent = m.group(1)
+                    indent_string = m.group(1)
                 else:
                     substitute = tab + substitute
-                b = region.begin() - len("\n" + indent + r_brace)
+                b = region.begin() - len("\n" + indent_string + r_brace)
 
                 if bol_at_nl:
                     replacement = l_brace + "\n" + substitute
                     if eol_at_nl:
-                        replacement += indent + r_brace + "\n"
+                        replacement += indent_string + r_brace + "\n"
                         b -= 1
                     else:
                         replacement += r_brace + "\n"
-                        b += len(indent)
+                        b += len(indent_string)
 
                     if not self.view.substr(region.begin() - 1) == ' ':
                         replacement = ' ' + replacement
                 else:
-                    replacement = indent + l_brace + "\n" + substitute + indent + r_brace + "\n"
+                    replacement = indent_string + l_brace + "\n" + substitute + indent_string + r_brace + "\n"
                     b -= 1
                 b += len(replacement)
             else:
@@ -206,6 +220,8 @@ class BracketeerCommand(sublime_plugin.TextCommand):
 
             if select:
                 self.view.sel().add(Region(b - len(replacement) + len(l_brace), b - len(r_brace)))
+            elif braces == "\n\n":
+                self.view.sel().add(Region(b - len(r_brace), b - len(r_brace)))
             else:
                 self.view.sel().add(Region(b, b))
 
@@ -271,7 +287,9 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
         end_point = region.end()
 
         # LaTEX: if selection directly preceeds \right, examine the string that includes \right instead of the actual selection
-        if self.view.substr( Region(end_point, min(end_point+6,self.view.size())) ) == '\\right': end_point += 6
+        is_latex = bool(self.view.score_selector(end_point, 'text.tex'))
+        if is_latex and self.view.substr( Region(end_point, min(end_point+6,self.view.size())) ) == '\\right':
+            end_point += 6
         # /LaTEX
 
         # end_point gets incremented immediately, which skips the first
@@ -292,12 +310,21 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
 
             if c2 in closing_search_brackets and c1 == match_map[c2]:
                 # LaTEX: if \left preceeds selection, select it as well
-                if self.view.substr(Region(max(begin_point-5,0), begin_point))=='\left': begin_point -= 5
+                if is_latex and self.view.substr(Region(max(begin_point-5,0), begin_point))=='\\left':
+                    begin_point -= 5
                 # /LaTEX
                 return Region(begin_point, end_point + 1)
 
         # scan forward searching for a closing bracket.
-        started_in_string = bool(self.view.score_selector(end_point, 'string') or self.view.score_selector(begin_point, 'string'))
+        begin_in_string = bool(
+            self.view.score_selector(begin_point, 'string')
+            and not self.view.score_selector(begin_point, 'punctuation.definition.string')
+        )
+        ended_in_string = bool(
+            self.view.score_selector(end_point, 'string')
+            and not self.view.score_selector(end_point, 'punctuation.definition.string')
+        )
+        started_in_string = begin_in_string or ended_in_string
         bracket_count = 0
         while True:
             c = self.view.substr(end_point)
@@ -335,7 +362,8 @@ class BracketeerBracketMatcher(sublime_plugin.TextCommand):
         begin_point += 1
 
         # LaTEX: if selection ends in \right, don't select it
-        if self.view.substr( Region(max(end_point-6,0), end_point) ) == '\\right': end_point -= 6
+        if is_latex and self.view.substr( Region(max(end_point-6,0), end_point) ) == '\\right':
+            end_point -= 6
         # /LaTEX
         return Region(begin_point, end_point)
 
