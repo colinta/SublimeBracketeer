@@ -3,10 +3,13 @@
   "description": "Some bracket manipulation, selection, and insertion commands.",
   "author": "Colin T.A. Gray (colinta)",
   "details": "https://github.com/colinta/SublimeBracketeer",
-  "labels": ["formatting", "text manipulation"],
+  "labels": [
+    "formatting",
+    "text manipulation"
+  ],
   "releases": [
     {
-      "details": "https://github.com/colinta/SublimeBracketeer/tags",
+      "tags": true,
       "sublime_text": ">=3000"
     }
   ]
