@@ -6,17 +6,10 @@ Some bracket manipulation, selection, and insertion commands.
 Installation
 ------------
 
-1. Using Package Control, install "Bracketeer"
+Using Package Control, install "Bracketeer" or clone this repo in your packages folder.
 
-Or:
-
-1. Open the Sublime Text Packages folder
-    - OS X: ~/Library/Application Support/Sublime Text 3/Packages/
-    - Windows: %APPDATA%/Sublime Text 3/Packages/
-    - Linux: ~/.Sublime Text 3/Packages/ or ~/.config/sublime-text-3/Packages
-
-2. clone this repo
-3. Install keymaps for the commands (see Example.sublime-keymap for my preferred keys)
+I recommended you add key bindings for the commands. I've included my preferred bindings below.
+Copy them to your key bindings file (⌘⇧,).
 
 Commands
 --------
@@ -29,12 +22,288 @@ Commands
 
 `bracketeer_select`: Searches for matching brackets and selects what is inside, or expands the selection to include the brackets.
 
-Keybindings
------------
+Key Bindings
+------------
 
-Open your key bindings file and add the bindings you want.  For example:
+Copy these to your user key bindings file.
 
-###### [Example.sublime-keymap](https://github.com/colinta/SublimeBracketeer/blob/master/Example.sublime-keymap)
+<!-- keybindings start -->
+    { "keys": ["super+]"], "command": "bracketeer_indent" },
+    { "keys": ["ctrl+shift+["], "command": "bracketeer_select" },
+
+    { "keys": ["ctrl+["], "command": "bracketeer_goto", "args": { "goto": "left" } },
+    { "keys": ["ctrl+]"], "command": "bracketeer_goto", "args": { "goto": "right" } },
+    { "keys": ["ctrl+alt+["], "command": "bracketeer_goto", "args": { "goto": "both" } },
+    { "keys": ["ctrl+alt+]"], "command": "bracketeer_goto", "args": { "goto": "both" } },
+    //|
+    //|  BRACKETEER
+    //|
+    { "keys": ["{"], "command": "bracketeer", "args": { "braces": "{}" } },
+    { "keys": ["}"], "command": "bracketeer", "args": { "braces": "{}", "pressed": "}", "unindent": true } },
+    { "keys": ["["], "command": "bracketeer", "args": { "braces": "[]" } },
+    { "keys": ["]"], "command": "bracketeer", "args": { "braces": "[]", "pressed": "]" } },
+    { "keys": ["("], "command": "bracketeer", "args": { "braces": "()" } },
+    { "keys": [")"], "command": "bracketeer", "args": { "braces": "()", "pressed": ")" } },
+
+    //|  reStructured Text
+    { "keys": ["alt+`"], "command": "bracketeer", "args": { "braces": "````", "pressed": "``" }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
+        ]
+    },
+    { "keys": ["*"], "command": "bracketeer", "args": { "braces": "**", "pressed": "*" }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
+        ]
+    },
+
+    //|  DJANGO CURLIES
+    // For django, liquid, jinja.  All the grammars *I* have list 'source.smarty' as
+    // when the cursor is inside "{}"s
+    { "keys": ["{"], "command": "bracketeer", "args": { "braces": "{  }" }, "context":
+        [{ "key": "selector", "operator": "equal", "operand": "source.smarty" }]
+    },
+    { "keys": ["{"], "command": "bracketeer", "args": { "braces": "{  }" }, "context":
+        [{ "key": "selector", "operator": "equal", "operand": "meta.brace.curly" }]
+    },
+    { "keys": ["%"], "command": "bracketeer", "args": { "braces": "%  %" }, "context":
+        [{ "key": "selector", "operator": "equal", "operand": "source.smarty" }]
+    },
+    { "keys": ["%"], "command": "bracketeer", "args": { "braces": "%  %" }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "meta.brace.curly" },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "<$", "match_all": true }
+        ]
+    },
+    { "keys": ["%"], "command": "insert_snippet", "args": { "contents": " $1 %>$0" }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "source.ruby" },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "<%$", "match_all": true }
+        ]
+    },
+    { "keys": [">"], "command": "insert_snippet", "args": { "contents": ">$1<% $0" }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "source.ruby" },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "%$", "match_all": true }
+        ]
+    },
+    { "keys": ["="], "command": "insert_snippet", "args": { "contents": "= $1 %>$0" }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "source.ruby" },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "<%$", "match_all": true }
+        ]
+    },
+    { "keys": ["-"], "command": "insert_snippet", "args": { "contents": "- $1 %>$0" }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "source.ruby" },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "<%$", "match_all": true }
+        ]
+    },
+    { "keys": ["#"], "command": "bracketeer", "args": { "braces": "#  #" }, "context":
+        [{ "key": "selector", "operator": "equal", "operand": "source.smarty" }]
+    },
+
+    //|  QUOTES
+    { "keys": ["\""], "command": "bracketeer", "args": { "braces": "\"\"", "pressed": "\"" } },
+    { "keys": ["ctrl+'","ctrl+'"], "command": "bracketeer", "args": { "braces": "\"\"\"\n\n\"\"\"" } },
+    { "keys": ["'"], "command": "bracketeer", "args": { "braces": "''", "pressed": "'" } },
+    { "keys": ["ctrl+'","'"], "command": "bracketeer", "args": { "braces": "'''\n\n'''" } },
+    { "keys": ["`"], "command": "bracketeer", "args": { "braces": "``", "pressed": "`" } },
+    { "keys": ["ctrl+'","`"], "command": "insert_snippet", "args": { "contents": "```${1:syntax}\n$0\n```" } },
+    { "keys": ["|"], "command": "bracketeer", "args": { "braces": "||", "pressed": "|" } },
+    { "keys": ["«"], "command": "bracketeer", "args": { "braces": "«»" } },
+    { "keys": ["»"], "command": "bracketeer", "args": { "braces": "«»", "pressed": "»" } },
+    { "keys": ["‹"], "command": "bracketeer", "args": { "braces": "‹›" } },
+    { "keys": ["›"], "command": "bracketeer", "args": { "braces": "‹›", "pressed": "›" } },
+    { "keys": ["“"], "command": "bracketeer", "args": { "braces": "“”" } },
+    { "keys": ["”"], "command": "bracketeer", "args": { "braces": "“”", "pressed": "”" }  },
+    { "keys": ["‘"], "command": "bracketeer", "args": { "braces": "‘’" } },
+    { "keys": ["’"], "command": "bracketeer", "args": { "braces": "‘’", "pressed": "’" } },
+
+    //|
+    //|  AUTO DELETE MATCHING '', "", [], etc.
+    //|
+    { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
+        [
+            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "\"$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^\"" }
+        ]
+    },
+    { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
+        [
+            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "'$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^'" }
+        ]
+    },
+    { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
+        [
+            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "`$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^`" }
+        ]
+    },
+    { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
+        [
+            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "«$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^»" }
+        ]
+    },
+    { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
+        [
+            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "‹$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^›" }
+        ]
+    },
+    { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
+        [
+            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "“$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^”" }
+        ]
+    },
+    { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
+        [
+            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "‘$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^’" }
+        ]
+    },
+    { "keys": ["backspace"], "command": "run_macro_file", "args": {"file": "Packages/Default/Delete Left Right.sublime-macro"}, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" },
+            { "key": "setting.auto_match_enabled", "operator": "equal", "operand": true },
+            { "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "\\*$" },
+            { "key": "following_text", "operator": "regex_contains", "operand": "^\\*" }
+        ]
+    },
+
+    //|
+    //|  Bracket and select
+    //|
+    { "keys": ["ctrl+alt+[", "backspace"], "command": "bracketeer", "args": { "braces": "", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "d"], "command": "bracketeer", "args": { "braces": ["do", "end"], "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "d"], "command": "bracketeer", "args": { "braces": ["do", "end"], "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "{"], "command": "bracketeer", "args": { "braces": "{}", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "{"], "command": "bracketeer", "args": { "braces": "{}", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", " "], "command": "bracketeer", "args": { "braces": "  ", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", " "], "command": "bracketeer", "args": { "braces": "  ", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "["], "command": "bracketeer", "args": { "braces": "[]", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "["], "command": "bracketeer", "args": { "braces": "[]", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "("], "command": "bracketeer", "args": { "braces": "()", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "("], "command": "bracketeer", "args": { "braces": "()", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "\""], "command": "bracketeer", "args": { "braces": "\"\"", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "\""], "command": "bracketeer", "args": { "braces": "\"\"", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "ctrl+shift+'"], "command": "bracketeer", "args": { "braces": "\"\"\"\"\"\"", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "ctrl+shift+'"], "command": "bracketeer", "args": { "braces": "\"\"\"\"\"\"", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "'"], "command": "bracketeer", "args": { "braces": "''", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "'"], "command": "bracketeer", "args": { "braces": "''", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "ctrl+'"], "command": "bracketeer", "args": { "braces": "''''''", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "ctrl+'"], "command": "bracketeer", "args": { "braces": "''''''", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "`"], "command": "bracketeer", "args": { "braces": "``", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "`"], "command": "bracketeer", "args": { "braces": "``", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "ctrl+`"], "command": "bracketeer", "args": { "braces": "``````", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "ctrl+`"], "command": "bracketeer", "args": { "braces": "``````", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "«"], "command": "bracketeer", "args": { "braces": "«»", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "«"], "command": "bracketeer", "args": { "braces": "«»", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "‹"], "command": "bracketeer", "args": { "braces": "‹›", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "‹"], "command": "bracketeer", "args": { "braces": "‹›", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "“"], "command": "bracketeer", "args": { "braces": "“”", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "“"], "command": "bracketeer", "args": { "braces": "“”", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "‘"], "command": "bracketeer", "args": { "braces": "‘’", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "‘"], "command": "bracketeer", "args": { "braces": "‘’", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "alt+`"], "command": "bracketeer", "args": { "braces": "````", "select": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+alt+[", "alt+`"], "command": "bracketeer", "args": { "braces": "````", "select": true, "replace": true }, "context":
+        [{ "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true }]
+    },
+    { "keys": ["ctrl+[", "*"], "command": "bracketeer", "args": { "braces": "**", "select": true }, "context":
+        [
+            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
+        ]
+    },
+    { "keys": ["ctrl+alt+[", "*"], "command": "bracketeer", "args": { "braces": "**", "select": true, "replace": true }, "context":
+        [
+            { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": true },
+            { "key": "selector", "operator": "equal", "operand": "text.restructuredtext" }
+        ]
+    },
+<!-- keybindings stop -->
 
 In depth
 --------
